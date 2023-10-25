@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <item name="colorPrimary">#010101</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <item name="colorPrimaryVariant">#37aa5f</item>
+        <item name="colorOnPrimaryVariant">#80FFFFFF</item>
+
+        <item name="colorAccent">#1DE9B6</item>
+        <item name="colorOnAccent">#000000</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:colorBackground">#292D2C</item>
+
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#000000</item>
+        <item name="colorOnSurfaceVariant">#5b5b5b</item>
+
+        <item name="colorPositive">#37aa5f</item>
+        <item name="colorOnPositive">#FFFFFF</item>
+
+        <item name="colorNegative">#FF0000</item>
+        <item name="colorOnNegative">#FFFFFF</item>
+
+        <item name="colorTrue">#37aa5f</item>
+        <item name="colorError">#FF0000</item>
+
+        <item name="colorDivider">#33FFFFFF</item>
+
+        <item name="colorWarning">#F2BE37</item>
+
+        <item name="colorLoading">#292D2C</item>
+
+        <item name="textBody1">@style/TextBody1</item>
+        <item name="textBody2">@style/TextBody2</item>
+        <item name="textButton">@style/TextButton</item>
+        <item name="textCaption">@style/TextCaption</item>
+        <item name="textOverline">@style/TextOverline</item>
+        <item name="textSubtitle1">@style/TextSubtitle1</item>
+        <item name="textSubtitle2">@style/TextSubtitle2</item>
+        <item name="textHeadline1">@style/TextHeadline1</item>
+        <item name="textHeadline2">@style/TextHeadline2</item>
+        <item name="textHeadline3">@style/TextHeadline3</item>
+        <item name="textHeadline4">@style/TextHeadline4</item>
+        <item name="textHeadline5">@style/TextHeadline5</item>
+        <item name="textHeadline6">@style/TextHeadline6</item>
+
+        <item name="buttonNormal">@style/ButtonNormal</item>
+
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Theme.SWallet" parent="Base.Theme.App">
+
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="colorPrimary">#17171A</item>
+        <item name="colorPrimaryVariant">#17171A</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <item name="android:colorBackground">#FDFDFD</item>
+        <item name="colorOnBackground">#000000</item>
+
+        <item name="colorBackgroundVariant">#212121</item>
+        <item name="colorOnBackgroundVariant">#7F8483</item>
+
+        <item name="colorOnBackgroundTertiary">#EAEAEA</item>
+
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#17171A</item>
+
+        <item name="colorNegative">#4B4F4E</item>
+        <item name="colorOnNegative">#FFFFFF</item>
+
+        <item name="colorSurfaceVariant">#222228</item>
+        <item name="colorOnSurfaceVariant">#6A6F6E</item>
+
+        <item name="colorTrue">#37aa5f</item>
+
+        <item name="colorVerify">#3396FF</item>
+        <item name="colorVerify10">#103396FF</item>
+
+        <item name="colorWarning">#FF800A</item>
+        <item name="colorWarning10">#10FF800A</item>
+
+        <item name="colorError">#ED4747</item>
+        <item name="colorError10">#10ED4747</item>
+
+        <item name="colorAccent">#37aa5f</item>
+        <item name="colorAccent10">#1037aa5f</item>
+        <item name="colorOnAccent">#FFFFFF</item>
+
+        <item name="colorDivider">#EAEAEA</item>
+    </style>
+
+    <style name="Popup" parent="Theme.SWallet">
+
+        <item name="colorSurface">#EAF1F1</item>
+
+        <item name="colorNegative">#EAF1F1</item>
+        <item name="colorOnNegative">#000000</item>
+
+        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="colorOnBackgroundTertiary">#EFEDEE</item>
+
+        <item name="colorNavigationBar">#292D2C</item>
+
+        <item name="colorLoading">#E1E1E1</item>
+    </style>
+
+    <style name="Camera" parent="Theme.SWallet">
+
+        <item name="colorOnBackground">#FFFFFF</item>
+    </style>
+
+    <style name="ScanTabItemTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+</resources>

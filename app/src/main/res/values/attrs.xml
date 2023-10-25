@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="colorVerify" format="color" />
+    <attr name="colorVerify10" format="color" />
+
+    <attr name="colorWarning" format="color" />
+    <attr name="colorWarning10" format="color" />
+
+    <attr name="colorError10" format="color" />
+    <attr name="colorAccent10" format="color" />
+
+    <attr name="colorOnBackgroundTertiary" format="color" />
+
+
+    <attr name="radius" format="dimension" />
+    <attr name="topLeftRadius" format="dimension" />
+    <attr name="topRightRadius" format="dimension" />
+    <attr name="bottomLeftRadius" format="dimension" />
+    <attr name="bottomRightRadius" format="dimension" />
+
+    <declare-styleable name="RoundFrameLayout">
+        <attr name="radius" />
+        <attr name="topLeftRadius" />
+        <attr name="topRightRadius" />
+        <attr name="bottomLeftRadius" />
+        <attr name="bottomRightRadius" />
+        <attr name="android:clipToPadding" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundConstraintLayout">
+        <attr name="radius" />
+        <attr name="topLeftRadius" />
+        <attr name="topRightRadius" />
+        <attr name="bottomLeftRadius" />
+        <attr name="bottomRightRadius" />
+        <attr name="android:clipToPadding" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundedImageView">
+        <attr name="radius" />
+        <attr name="topLeftRadius" />
+        <attr name="topRightRadius" />
+        <attr name="bottomLeftRadius" />
+        <attr name="bottomRightRadius" />
+        <attr name="android:clipToPadding" format="boolean" />
+        <attr name="android:adjustViewBounds" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundedTextView">
+        <attr name="rtv_radius" format="dimension" />
+        <attr name="rtv_topLeftRadius" format="dimension" />
+        <attr name="rtv_topRightRadius" format="dimension" />
+        <attr name="rtv_bottomLeftRadius" format="dimension" />
+        <attr name="rtv_bottomRightRadius" format="dimension" />
+        <attr name="rtv_colorNormal" format="reference" />
+        <attr name="rtv_colorSelected" format="reference" />
+        <attr name="rtv_selected" format="boolean" />
+    </declare-styleable>
+</resources>

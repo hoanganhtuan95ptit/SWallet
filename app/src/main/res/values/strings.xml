@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">SWallet</string>
+
+    <string name="title_confirm">Confirm</string>
+    <string name="title_add_wallet">Add Wallet</string>
+    <string name="title_import_wallet">Import wallet</string>
+    <string name="title_create_wallet">Create new wallet</string>
+
+
+    <string name="caption_add_wallet">You can create a new one or add your existing wallet</string>
+    <string name="caption_import_wallet">Nhập, khôi phục, hoặc chỉ xem</string>
+    <string name="caption_create_wallet">Tạo một ví đa chuỗi mới</string>
+
+
+    <string name="message_input_here">Input here</string>
+    <string name="message_name_wallet">Name your wallet (Optional)</string>
+    <string name="message_key_invalid">Incorrect Seed phrase or Private key or Address. Please try again</string>
+    <string name="message_import_wallet">Enter seed phrase or private key to import wallet, or address to watch wallet</string>
+    <string name="message_confirm_wallet">Set a wallet name</string>
+    <string name="message_add_wallet_congratulations">Xin chúc mừng!\nBạn đã thêm ví %s thành công</string>
+
+
+    <string name="action_paste">Paste</string>
+    <string name="action_finish">Finish</string>
+    <string name="action_create">Create</string>
+    <string name="action_continue">Continue</string>
+
+
+    <string name="hint_enter_name_wallet">Enter name wallet</string>
+
+    <string name="wallet_name">Wallet Name</string>
+    <string name="title_set_wallet_name">Set wallet name</string>
+    <string name="describe_set_wallet_name">Give your wallet a unique name. It can be everything you want, easy to remember</string>
+
+    <string name="scan_info">Securely scan WalletConnect or scan QR code to import wallet, access URL on the Browser, etc.</string>
+    <string name="scan_info_drag">Drag the crop frame to adjust capturing area</string>
+    <string name="scan_info_sub_normal">Private key detection is performed on your mobile device</string>
+</resources>

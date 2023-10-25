@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    tools:ignore="ContentDescription, Autofill, TextFields">
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="40dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="12dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_back_on_background_24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="?attr/textHeadline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/title_import_wallet"
+        android:textColor="?attr/colorOnBackground"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_back" />
+
+    <EditText
+        android:id="@+id/edt_key"
+        style="?attr/textBody1"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_corners_16dp_stroke_dash_1dp_divider"
+        android:gravity="top"
+        android:hint="@string/message_import_wallet"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="48dp"
+        android:textColor="?attr/colorOnBackground"
+        android:textColorHint="?attr/colorOnBackgroundVariant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <TextView
+        android:id="@+id/tv_error"
+        style="?attr/textCaption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/message_key_invalid"
+        android:textColor="?attr/colorError"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/edt_key"
+        app:layout_constraintTop_toBottomOf="@+id/edt_key"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_clear"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_close_on_background_variant_24dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/edt_key"
+        app:layout_constraintTop_toTopOf="@+id/edt_key"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_paste"
+        style="?attr/textCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textColor="?attr/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@id/iv_scan"
+        app:layout_constraintEnd_toStartOf="@id/iv_scan"
+        app:layout_constraintTop_toTopOf="@id/iv_scan" />
+
+    <ImageView
+        android:id="@+id/iv_scan"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_scan_on_background_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/edt_key"
+        app:layout_constraintEnd_toEndOf="@id/edt_key" />
+
+    <TextView
+        android:id="@+id/tv_word_count"
+        style="@style/TextBody1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_paste" />
+
+    <EditText
+        android:id="@+id/edt_name"
+        style="?attr/textBody2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hint_enter_name_wallet"
+        android:paddingVertical="14dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="52dp"
+        android:background="@drawable/bg_corners_16dp_stroke_dash_1dp_divider"
+        android:singleLine="true"
+        android:textColor="?attr/colorSurface"
+        android:textColorHint="?attr/colorOnBackgroundVariant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_error" />
+
+    <TextView
+        android:id="@+id/tv_continue"
+        style="?attr/textHeadline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/bg_corners_16dp_state_accent_and_background_variant"
+        android:gravity="center"
+        android:paddingVertical="14dp"
+        android:text="@string/action_continue"
+        android:textColor="@color/color_state_on_background_variant_and_on_accent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
