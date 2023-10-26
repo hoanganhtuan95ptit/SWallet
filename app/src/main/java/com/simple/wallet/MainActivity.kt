@@ -27,6 +27,7 @@ import com.simple.coreapp.utils.extentions.toPx
 import com.simple.navigation.Navigation
 import com.simple.navigation.utils.ext.offerDeepLink
 import com.simple.wallet.databinding.ActivityMainBinding
+import com.simple.wallet.presentation.home.HomeFragment
 import com.simple.wallet.ui.theme.SWalletTheme
 import kotlinx.coroutines.launch
 
@@ -40,14 +41,12 @@ class MainActivity : BaseViewBindingActivity<ActivityMainBinding>(), ActivityScr
 
         super.onCreate(savedInstanceState)
 
-        val binding = binding ?: return
+        lifecycleScope.launchWhenResumed {
 
-
-        offerDeepLink("/add-wallet")
-
-        doOnHeightNavigationChange {
-
+            supportFragmentManager.beginTransaction().add(R.id.fragment_container, HomeFragment()).commitAllowingStateLoss()
         }
+
+        val binding = binding ?: return
 
         binding.root.parent.asObject<View>().setBackgroundColor(binding.root.context.getColorFromAttr(com.google.android.material.R.attr.colorOnBackground))
     }

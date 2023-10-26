@@ -177,7 +177,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
             val binding = binding ?: return@observe
 
-            binding.tvError.setVisible(it is ResultState.Failed && (it.error !is AppException || it.error.asObject<AppException>().code != ImportWalletViewModel.ImportWalletErrorCode.EMPTY))
+            binding.tvError.setVisible(it is ResultState.Failed && (it.cause !is AppException || it.cause.asObject<AppException>().code != ImportWalletViewModel.ImportWalletErrorCode.EMPTY))
 
             binding.tvContinue.isSelected = it.isSuccess()
             binding.tvContinue.isClickable = it.isSuccess()

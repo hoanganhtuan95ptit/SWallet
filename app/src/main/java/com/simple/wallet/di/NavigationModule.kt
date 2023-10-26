@@ -2,6 +2,8 @@ package com.simple.wallet.di
 
 import com.simple.navigation.NavigationProvider
 import com.simple.wallet.presentation.camera.CameraProvider
+import com.simple.wallet.presentation.chain.SelectChainProvider
+import com.simple.wallet.presentation.wallet.select.SelectWalletProvider
 import com.simple.wallet.presentation.wallet.add.AddWalletProvider
 import com.simple.wallet.presentation.wallet.add.confirm.ConfirmWalletProvider
 import com.simple.wallet.presentation.wallet.add.create.CreateWalletProvider
@@ -13,6 +15,7 @@ val navigationModule = module {
 
     single { CameraProvider() } bind NavigationProvider::class
 
+
     single { AddWalletProvider() } bind NavigationProvider::class
 
     single { CreateWalletProvider() } bind NavigationProvider::class
@@ -20,4 +23,9 @@ val navigationModule = module {
     single { ImportWalletProvider() } bind NavigationProvider::class
 
     single { ConfirmWalletProvider() } bind NavigationProvider::class
+
+
+    single { SelectChainProvider() } bind NavigationProvider::class
+
+    single { SelectWalletProvider() } bind NavigationProvider::class
 }

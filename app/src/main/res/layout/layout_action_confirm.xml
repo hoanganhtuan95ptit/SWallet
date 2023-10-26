@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/colorBackground"
+    android:paddingVertical="30dp">
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/v_flow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids="tv_negative,tv_positive"
+        app:flow_horizontalAlign="end"
+        app:flow_horizontalGap="16dp"
+        app:flow_horizontalStyle="packed"
+        app:flow_wrapMode="aligned"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_negative"
+        style="?attr/textBody1"
+        android:layout_width="0dp"
+        android:background="@drawable/bg_corners_16dp_solid_negative"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:lines="1"
+        android:maxWidth="250dp"
+        android:minWidth="150dp"
+        android:minHeight="48dp"
+        android:text="@string/action_cancel"
+        android:textColor="?attr/colorOnNegative"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/progress_negative"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:indeterminateTint="?attr/colorOnNegative"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tv_negative"
+        app:layout_constraintStart_toStartOf="@id/tv_negative"
+        app:layout_constraintTop_toTopOf="@id/tv_negative"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_positive"
+        style="?attr/textBody1"
+        android:layout_width="0dp"
+        android:background="@drawable/bg_corners_16dp_solid_positive"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:lines="1"
+        android:maxWidth="250dp"
+        android:minWidth="150dp"
+        android:minHeight="48dp"
+        android:text="@string/action_confirm"
+        android:textColor="?attr/colorOnAccent"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/progress_positive"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:indeterminateTint="?attr/colorOnAccent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tv_positive"
+        app:layout_constraintStart_toStartOf="@id/tv_positive"
+        app:layout_constraintTop_toTopOf="@id/tv_positive"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

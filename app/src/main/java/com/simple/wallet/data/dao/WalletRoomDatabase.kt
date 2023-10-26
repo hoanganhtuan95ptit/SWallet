@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import com.simple.core.utils.extentions.toJson
 import com.simple.core.utils.extentions.toObjectOrNull
 
-const val versionDao = 1
+private const val versionDao = 1
 
 @Database(entities = [RoomWallet::class], version = versionDao, exportSchema = false)
 @TypeConverters(ListStringConverter::class, HashMapConverter::class)

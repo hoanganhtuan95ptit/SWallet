@@ -5,7 +5,6 @@ import com.simple.adapter.ViewItemAdapter
 import com.simple.adapter.ViewItemCloneable
 import com.simple.coreapp.utils.extentions.emptyImage
 import com.simple.coreapp.utils.extentions.emptyText
-import com.simple.coreapp.utils.extentions.getColorFromAttr
 import com.simple.coreapp.utils.extentions.image.Image
 import com.simple.coreapp.utils.extentions.setImage
 import com.simple.coreapp.utils.extentions.setText
@@ -21,8 +20,7 @@ class MessageAdapter(val onItemClick: (View, MessageViewItem) -> Unit = { _, _ -
 
         binding.ivMessage.setImage(item.messageIcon)
 
-        if (item.messageAttrColor > 0) binding.tvMessage.setTextColor(binding.root.context.getColorFromAttr(item.messageAttrColor))
-        if (item.messageBackground > 0) binding.root.setBackgroundResource(item.messageBackground)
+        if (item.background > 0) binding.root.setBackgroundResource(item.background)
     }
 }
 
@@ -31,8 +29,8 @@ class MessageViewItem(
 
     var message: Text = emptyText(),
     var messageIcon: Image = emptyImage(),
-    var messageAttrColor: Int = 0,
-    var messageBackground: Int = 0,
+
+    var background: Int = 0,
 ) : ViewItemCloneable {
 
     override fun areItemsTheSame(): List<Any> = listOf(

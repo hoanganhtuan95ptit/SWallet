@@ -32,7 +32,67 @@
     <string name="title_set_wallet_name">Set wallet name</string>
     <string name="describe_set_wallet_name">Give your wallet a unique name. It can be everything you want, easy to remember</string>
 
+
+    <string name="evm">Evm</string>
+
+    <string name="watch">Watch</string>
+
+    <string name="all_network">All Mainnets</string>
+    <string name="multi_chain">Multi-chain</string>
+    <string name="all_wallet">All wallet</string>
+    <string name="title_swap">Swap</string>
+    <string name="title_d_app">Browser</string>
+    <string name="title_bridge">Bridge</string>
+    <string name="title_transfer">Transfer</string>
     <string name="scan_info">Securely scan WalletConnect or scan QR code to import wallet, access URL on the Browser, etc.</string>
     <string name="scan_info_drag">Drag the crop frame to adjust capturing area</string>
     <string name="scan_info_sub_normal">Private key detection is performed on your mobile device</string>
+    <string name="unlimited">Unlimited</string>
+
+    <string name="transfer_estimate_fee">Estimated fee</string>
+    <string name="transfer_max_gas_fee">Max gas fee</string>
+    <string name="transfer_network_fee">Network Fee</string>
+    <string name="transfer_value_gas_fee" formatted="false">%s · %s</string>
+
+
+    <string name="message_revoke">%s want to revoke %s</string>
+    <string name="message_suggest">Suggest: %s</string>
+    <string name="message_approve">%s want to approve %s</string>
+    <string name="message_warning">Giao dịch này có một số vấn đề bạn cần chú ý.</string>
+    <string name="message_transfer">%s want to transfer %s</string>
+    <string name="message_connect_0">Requested permissions</string>
+    <string name="message_connect_1">View your balance and activity</string>
+    <string name="message_connect_2">Request approval for transactions</string>
+    <string name="message_connect_3">Move funds without permission</string>
+    <string name="message_sign_permit">%s want to sign permit %s</string>
+    <string name="message_max_gas_fee">Max gas fee</string>
+    <string name="message_sign_message">%s want to sign message</string>
+    <string name="message_send_transtion">%s want to send transaction</string>
+    <string name="message_slow_super_fast">Slow: %s - Super Fast: %s</string>
+    <string name="message_warning_out_gas">- Phí giao dịch quá cao (từ %s đến %s).</string>
+    <string name="message_warning_url_risk">- The DApp you are accessing is potentially high risk.</string>
+
+
+    <string name="title_data">Data</string>
+    <string name="title_nonce">Nonce</string>
+    <string name="title_sender">Sender address</string>
+    <string name="title_receiver">Receiver address</string>
+    <string name="title_gas_limit">Gas Limit</string>
+    <string name="title_gas_price">Gas price %s</string>
+    <string name="title_max_gas_fee">Max gas fee %s</string>
+    <string name="title_connect_error">Wallet connect error</string>
+    <string name="title_amount_transfer">Amount transfer</string>
+    <string name="title_max_priority_fee">Max priority fee %s</string>
+    <string name="title_transaction_setting">Transaction setting</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_not_support">Not support</string>
+
+    <string name="message_confirming">Confirming</string>
+
+    <string name="message_wallet_connect_time">%s at %s</string>
+
+    <string name="time_today">Today</string>
+    <string name="time_one_day_ago">Yesterday</string>
+    <string name="action_reject">Reject</string>
 </resources>

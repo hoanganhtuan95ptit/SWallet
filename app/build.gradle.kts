@@ -81,6 +81,18 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.0")
     kapt("androidx.room:room-compiler:2.6.0")
 
+    api(platform("com.walletconnect:android-bom:1.13.0"))
+
+    api("com.walletconnect:android-core")
+    api("com.walletconnect:web3wallet")
+    api("com.walletconnect:sign")
+
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
+    implementation("jp.co.cyberagent.android:gpuimage:2.1.0")
+
+    implementation("com.caverock:androidsvg-aar:1.4")
+    implementation("com.github.WycliffeAssociates:jdenticon-kotlin:7a4bbbd77e")
+
     implementation("com.google.mlkit:vision-common:17.3.0")
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     implementation("com.google.mlkit:text-recognition:16.0.0")

@@ -1,6 +1,6 @@
 package com.simple.wallet.domain.entities
 
-import kotlinx.parcelize.Parcelize
+import java.math.BigInteger
 
 data class Token(
     var address: String = "",
@@ -19,4 +19,6 @@ data class Token(
 ) : Entity {
 
     var cgkId: String = ""
+
+    var balance: BigInteger = BigInteger.ZERO
 }

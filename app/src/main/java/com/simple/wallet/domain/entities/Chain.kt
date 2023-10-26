@@ -1,10 +1,5 @@
 package com.simple.wallet.domain.entities
 
-import android.os.Parcelable
-import com.simple.wallet.domain.entities.Wallet.Companion.toWalletType
-import kotlinx.parcelize.Parcelize
-import java.io.Serializable
-
 data class Chain(
 
     val id: Long,
@@ -23,6 +18,10 @@ data class Chain(
     }
 
     companion object {
+
+        const val ALL_NETWORK = -1000L
+
+        val ALL = Chain(ALL_NETWORK)
 
         fun String.toChainType() = Chain.Type.values().find { this.equals(it.value, true) } ?: error("not support $this")
 

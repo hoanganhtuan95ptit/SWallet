@@ -1,7 +1,5 @@
 package com.simple.wallet.domain.entities
 
-import kotlinx.parcelize.Parcelize
-
 data class Message(
     val message: String,
 

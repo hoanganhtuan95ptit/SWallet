@@ -3,6 +3,7 @@ package com.simple.wallet.data.task
 import com.simple.adapter.ViewItemCloneable
 import com.simple.coreapp.utils.extentions.toImage
 import com.simple.coreapp.utils.extentions.toText
+import com.simple.coreapp.utils.extentions.withTextColor
 import com.simple.task.LowException
 import com.simple.wallet.R
 import com.simple.wallet.domain.tasks.CameraActionTask
@@ -22,9 +23,8 @@ class CameraActionScanTask : CameraActionTask {
 
         MessageViewItem(
             id = "",
-            message = R.string.scan_info_drag.toText(),
+            message = R.string.scan_info_drag.toText().withTextColor( com.google.android.material.R.attr.colorOnBackground),
             messageIcon = R.drawable.ic_scan_drag_primary_24dp.toImage(),
-            messageAttrColor = com.google.android.material.R.attr.colorOnBackground
         ).let {
 
             list.add(it)
@@ -32,9 +32,8 @@ class CameraActionScanTask : CameraActionTask {
 
         MessageViewItem(
             id = "",
-            message = R.string.scan_info_sub_normal.toText(),
+            message = R.string.scan_info_sub_normal.toText().withTextColor( com.google.android.material.R.attr.colorOnBackground),
             messageIcon = R.drawable.ic_scan_private_key_primary_24dp.toImage(),
-            messageAttrColor = com.google.android.material.R.attr.colorOnBackground
         ).let {
 
             list.add(it)

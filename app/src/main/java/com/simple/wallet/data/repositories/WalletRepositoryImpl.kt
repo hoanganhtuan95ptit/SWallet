@@ -6,6 +6,8 @@ import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Wallet
 import com.simple.wallet.domain.repositories.WalletRepository
 import com.simple.wallet.utils.exts.fromHex
+import com.simple.wallet.utils.exts.shortenValue
+import com.simple.wallet.utils.exts.takeIfNotBlank
 import com.simple.wallet.utils.exts.toCoinType
 import wallet.core.jni.CoinType
 import wallet.core.jni.HDWallet
@@ -20,6 +22,11 @@ class WalletRepositoryImpl(
     override fun generateMnemonic(): String {
 
         return HDWallet(128, "").mnemonic()
+    }
+
+    override fun getPrivateKey(walletAddress: String): String {
+
+        return ""
     }
 
     override fun importWallet(name: String, key: String, type: Wallet.Type, addressAndChainType: Map<String, Chain.Type>): Wallet {
@@ -45,16 +52,19 @@ class WalletRepositoryImpl(
 
             val generatedPassword = generatePassword()
 
-            StoredKey.importPrivateKey(key.fromHex(), name, generatedPassword, chainType.toCoinType())
+            val storedKey = StoredKey.importPrivateKey(key.fromHex(), name, generatedPassword, chainType.toCoinType())
 
-            wallet.id = wallet.id ?: UUID.randomUUID().toString()
+            wallet.id = storedKey.identifier()
         } else {
 
             wallet.id = wallet.id ?: UUID.randomUUID().toString()
         }
 
 
-        wallet.name = name
+        val nameWrap = name.takeIfNotBlank() ?: wallet.name.takeIfNotBlank() ?: addressAndChainType.toList().first().first.shortenValue()
+
+
+        wallet.name = nameWrap
         wallet.type = type
         wallet.addressMap = addressAndChainType
 

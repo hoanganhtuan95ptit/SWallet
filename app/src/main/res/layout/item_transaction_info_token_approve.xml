@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="8dp">
+
+    <com.simple.wallet.presentation.view.shape.round.RoundedImageView
+        android:id="@+id/iv_token"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:radius="150dp"
+        tools:src="@drawable/img_all_network" />
+
+    <TextView
+        android:id="@+id/tv_token"
+        style="?attr/textBody1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/iv_token"
+        app:layout_constraintEnd_toStartOf="@id/tv_amount_approve"
+        app:layout_constraintStart_toEndOf="@id/iv_token"
+        app:layout_constraintTop_toTopOf="@id/iv_token"
+        tools:ignore="RtlSymmetry"
+        tools:text="BNB" />
+
+    <TextView
+        android:id="@+id/tv_amount_approve"
+        style="?attr/textBody1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:textColor="?attr/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@id/iv_token"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_token"
+        tools:ignore="RtlSymmetry"
+        tools:text="BNB" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
