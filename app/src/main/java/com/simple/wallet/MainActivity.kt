@@ -2,36 +2,27 @@ package com.simple.wallet
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.simple.bottomsheet.ActivityScreen
 import com.simple.core.utils.extentions.asObject
-import com.simple.coreapp.ui.base.activities.BaseViewBindingActivity
-import com.simple.coreapp.utils.extentions.doOnHeightNavigationChange
+import com.simple.coreapp.ui.base.activities.BaseViewModelActivity
 import com.simple.coreapp.utils.extentions.getColorFromAttr
 import com.simple.coreapp.utils.extentions.toPx
 import com.simple.navigation.Navigation
-import com.simple.navigation.utils.ext.offerDeepLink
 import com.simple.wallet.databinding.ActivityMainBinding
+import com.simple.wallet.presentation.ViewObserve
 import com.simple.wallet.presentation.home.HomeFragment
-import com.simple.wallet.ui.theme.SWalletTheme
-import kotlinx.coroutines.launch
+import org.koin.android.ext.android.getKoin
 
-class MainActivity : BaseViewBindingActivity<ActivityMainBinding>(), ActivityScreen, Navigation {
+class MainActivity : BaseViewModelActivity<ActivityMainBinding, MainViewModel>(), ActivityScreen, Navigation {
+
+    private val viewObserves: List<ViewObserve> by lazy {
+        getKoin().getAll()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -49,6 +40,13 @@ class MainActivity : BaseViewBindingActivity<ActivityMainBinding>(), ActivityScr
         val binding = binding ?: return
 
         binding.root.parent.asObject<View>().setBackgroundColor(binding.root.context.getColorFromAttr(com.google.android.material.R.attr.colorOnBackground))
+
+        viewObserves.forEach {
+
+            it.setOwner(this)
+        }
+
+        viewModel
     }
 
     override fun onPercent(percent: Float) {

@@ -2,7 +2,7 @@
 //
 //import com.kyrd.chain.data.dao.ConfigChainDao
 //import com.kyrd.chain.data.dao.chain.token.ConfigTokenDao
-//import com.kyrd.chain.data.dao.chain.token.TokenDao
+//import com.simple.wallet.data.dao.token.TokenDao
 //import com.kyrd.chain.entities.ChainConfigType
 //import com.kyrd.krystal.domain.usecase.ResultState
 //import com.kyrd.token.entities.Token

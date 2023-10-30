@@ -9,6 +9,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
+import com.simple.bottomsheet.CustomBottomSheetDialog
 import com.simple.coreapp.ui.base.fragments.BaseViewModelSheetFragment
 import com.simple.coreapp.ui.dialogs.OptionFragment.Companion.KEY_REQUEST
 import com.simple.coreapp.utils.autoCleared
@@ -28,6 +29,8 @@ class SelectChainPopup : BaseViewModelSheetFragment<PopupListBinding, SelectChai
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (dialog as? CustomBottomSheetDialog)?.postponeEnterTransition()
 
         setupBottomSheet()
         setupRecyclerView()
@@ -85,6 +88,8 @@ class SelectChainPopup : BaseViewModelSheetFragment<PopupListBinding, SelectChai
         chainViewItemList.observe(viewLifecycleOwner) {
 
             adapter?.submitList(it)
+
+            (dialog as? CustomBottomSheetDialog)?.startPostponedEnterTransition()
         }
     }
 

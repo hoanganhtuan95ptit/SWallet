@@ -13,8 +13,8 @@ import com.simple.core.utils.extentions.toObject
 import com.simple.core.utils.extentions.toTree
 import com.simple.coreapp.ui.adapters.SpaceViewItem
 import com.simple.coreapp.ui.base.viewmodels.BaseViewModel
+import com.simple.coreapp.utils.AppException
 import com.simple.coreapp.utils.extentions.combineSources
-import com.simple.coreapp.utils.extentions.emptyText
 import com.simple.coreapp.utils.extentions.get
 import com.simple.coreapp.utils.extentions.getOrEmpty
 import com.simple.coreapp.utils.extentions.listenerSources
@@ -23,27 +23,32 @@ import com.simple.coreapp.utils.extentions.postDifferentValue
 import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
 import com.simple.coreapp.utils.extentions.postValue
 import com.simple.coreapp.utils.extentions.text.TextSpan
-import com.simple.coreapp.utils.extentions.toPx
 import com.simple.coreapp.utils.extentions.toText
+import com.simple.coreapp.utils.extentions.withTextColor
 import com.simple.state.ResultState
 import com.simple.state.doSuccess
 import com.simple.state.toSuccess
+import com.simple.wallet.DP_20
 import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Message
 import com.simple.wallet.domain.entities.Request
-import com.simple.wallet.domain.entities.Token
 import com.simple.wallet.domain.entities.Wallet
 import com.simple.wallet.domain.entities.extra.ApproveExtra
 import com.simple.wallet.domain.entities.extra.SignPersonalExtra
 import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
-import com.simple.wallet.domain.usecases.SignMessageUseCase
+import com.simple.wallet.domain.usecases.chain.GetChainByUseCase
+import com.simple.wallet.domain.usecases.message.SignMessageUseCase
+import com.simple.wallet.domain.usecases.wallet.GetWalletByUseCase
 import com.simple.wallet.presentation.adapters.BottomViewItem
 import com.simple.wallet.presentation.adapters.KeyValueViewItemV3
+import com.simple.wallet.presentation.adapters.MessageViewItem
+import com.simple.wallet.presentation.adapters.TextCaptionViewItem
 import com.simple.wallet.presentation.adapters.TokenApproveViewItem
 import com.simple.wallet.utils.exts.shortenValue
-import com.simple.wallet.utils.exts.toHeaderViewItem
+import com.simple.wallet.utils.exts.takeIfNotEmpty
 import com.simple.wallet.utils.exts.toMessageViewItem
+import com.simple.wallet.utils.exts.toTransactionHeaderViewItem
 import com.simple.wallet.utils.exts.toViewItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,13 +59,23 @@ class SignMessageConfirmViewModel(
 
     private val signMessageUseCase: SignMessageUseCase,
     private val detectMessageAsyncUseCase: DetectRequestAsyncUseCase,
+
+    private val getChainByUseCase: GetChainByUseCase,
+    private val getWalletByUseCase: GetWalletByUseCase,
 ) : BaseViewModel() {
 
-    val nativeToken: LiveData<Token> = MediatorLiveData()
 
-    val currentChain: LiveData<Chain> = MediatorLiveData()
+    @VisibleForTesting
+    val currentChain: LiveData<Chain> = liveData {
 
-    var currentWallet: LiveData<Wallet> = MediatorLiveData()
+        postDifferentValueIfActive(getChainByUseCase.execute(GetChainByUseCase.Param(mRequest.message!!.chainId)))
+    }
+
+    @VisibleForTesting
+    var currentWallet: LiveData<Wallet> = liveData {
+
+        postDifferentValueIfActive(getWalletByUseCase.execute(GetWalletByUseCase.Param(mRequest.walletAddress!!)))
+    }
 
 
     @VisibleForTesting
@@ -104,13 +119,13 @@ class SignMessageConfirmViewModel(
 
         val list = arrayListOf<ViewItemCloneable>()
 
-        list.add(requestDetect.get().toHeaderViewItem())
+        list.add(requestDetect.get().toTransactionHeaderViewItem())
 
         postDifferentValueIfActive(list)
     }
 
     @VisibleForTesting
-    val messageInfoViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(nativeToken, requestDetect) {
+    val messageInfoViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(requestDetect) {
 
         val message = requestDetect.get().message ?: return@combineSources
 
@@ -122,7 +137,7 @@ class SignMessageConfirmViewModel(
     }
 
     @VisibleForTesting
-    val transactionMessageViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(nativeToken, isConfirm, requestDetectState) {
+    val transactionMessageViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(isConfirm, requestDetectState) {
 
         val request = requestDetectState.get().toSuccess()?.data
 
@@ -154,17 +169,21 @@ class SignMessageConfirmViewModel(
 
         list.addAll(headerViewItemList.getOrEmpty())
 
-        list.addAll(messageInfoViewItemList.getOrEmpty())
+        messageInfoViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
 
-        transactionMessageViewItemList.getOrEmpty().takeIf { it.isNotEmpty() }?.let {
-
-            list.add(SpaceViewItem(height = 20.toPx()))
+            list.add(SpaceViewItem(height = DP_20))
             list.addAll(it)
         }
 
-        bottomViewItemList.getOrEmpty().takeIf { it.isNotEmpty() }?.let {
+        transactionMessageViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
 
-            list.add(SpaceViewItem(height = 20.toPx()))
+            list.add(SpaceViewItem(height = DP_20))
+            list.addAll(it)
+        }
+
+        bottomViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
+
+            list.add(SpaceViewItem(height = DP_20))
             list.addAll(it)
         }
 
@@ -197,61 +216,27 @@ class SignMessageConfirmViewModel(
         isConfirm.postValue(true)
     }
 
-    fun updateNativeToken(token: Token): Boolean {
-
-        if (this.nativeToken.value?.address.equals(token.address, true) && this.nativeToken.value?.symbol.equals(token.symbol, true) && this.nativeToken.value?.chainId == token.chainId) {
-            return false
-        }
-
-        return this.nativeToken.postDifferentValue(token) { old, new ->
-            old?.address.equals(new.address, true) && old?.symbol.equals(new.symbol, true) && old?.chainId == new.chainId
-        }
-    }
-
-    fun updateCurrentChain(chain: Chain): Boolean {
-
-        if (this.currentChain.value?.id == chain.id) {
-            return false
-        }
-
-        return this.currentChain.postDifferentValue(chain) { old, new ->
-            old?.id == new.id
-        }
-    }
-
-    fun updateCurrentWallet(wallet: Wallet): Boolean {
-
-//        if (this.currentWallet.value?.address.equals(wallet.address, true)) {
-//            return false
-//        }
-//
-//        return this.currentWallet.postDifferentValue(wallet) { old, new ->
-//            old?.address.equals(new.address, true)
-//        }
-        return false
-    }
-
     fun signMessage() = viewModelScope.launch(handler + Dispatchers.IO) {
 
-//        val messageViewItemList = transactionMessageViewItemList.getOrEmpty().filterIsInstance<MessageInfoViewItem>()
-//
-//        if (messageViewItemList.isNotEmpty() && messageViewItemList.any { it.showConfirm } && isConfirm.value == false) {
-//
-//            signMessageState.postValue(ResultState.Failed("", AppExceptionV2(code = TransactionCode.PLEASE_CONFIRM)))
-//
-//            return@launch
-//        }
-//
-//
-//        kotlin.runCatching {
-//
-//            signMessageState.postDifferentValue(ResultState.Start)
-//
-//            signMessageState.postDifferentValue(signMessageUseCase.execute(SignMessageUseCase.Param(mRequest)))
-//        }.getOrElse {
-//
-//            signMessageState.postDifferentValue(ResultState.Failed(it.message ?: "error", it))
-//        }
+        val messageViewItemList = transactionMessageViewItemList.getOrEmpty().filterIsInstance<MessageViewItem>()
+
+        if (messageViewItemList.isNotEmpty() && messageViewItemList.any { it.needConfirm } && isConfirm.value == false) {
+
+            signMessageState.postValue(ResultState.Failed(AppException(code = TransactionCode.PLEASE_CONFIRM)))
+
+            return@launch
+        }
+
+
+        kotlin.runCatching {
+
+            signMessageState.postDifferentValue(ResultState.Start)
+
+            signMessageState.postDifferentValue(signMessageUseCase.execute(SignMessageUseCase.Param(mRequest)))
+        }.getOrElse {
+
+            signMessageState.postDifferentValue(ResultState.Failed(it))
+        }
     }
 
     private fun Message.getInfo(): List<ViewItemCloneable> {
@@ -276,7 +261,7 @@ class SignMessageConfirmViewModel(
 
             val extra = this.extra.asObjectOrNull<SignPersonalExtra>()!!
 
-            list.add(KeyValueViewItemV3("", emptyText(), extra.decode.toText(), paddingLeft = (-16).toPx()).refresh())
+            list.add(TextCaptionViewItem(id = "", text = extra.decode.toText().withTextColor(com.simple.coreapp.R.attr.colorOnBackgroundVariant)))
         } else {
 
             list.addAll(this.message.toTree().get("message").toJson().toObject<MutableMap<*, *>>().toViewItem(0))

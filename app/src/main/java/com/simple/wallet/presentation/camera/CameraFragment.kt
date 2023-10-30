@@ -1,10 +1,8 @@
 package com.simple.wallet.presentation.camera
 
 import android.Manifest
-import android.os.Bundle
 import android.util.Size
 import android.view.Surface.ROTATION_0
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -32,6 +30,7 @@ import com.simple.coreapp.utils.extentions.setVisible
 import com.simple.navigation.NavigationProvider
 import com.simple.navigation.utils.ext.setNavigationResult
 import com.simple.wallet.DATA
+import com.simple.wallet.PARAM_ACTION
 import com.simple.wallet.databinding.FragmentCameraBinding
 import com.simple.wallet.domain.entities.scan.ScanInputType
 import com.simple.wallet.presentation.adapters.MessageAdapter
@@ -44,7 +43,7 @@ internal class CameraFragment : BaseViewModelFragment<FragmentCameraBinding, Cam
 
     private val action: String by lazy {
 
-        arguments?.getString(ACTION) ?: ""
+        arguments?.getString(PARAM_ACTION) ?: ""
     }
 
     private val keyRequest: String by lazy {
@@ -68,26 +67,16 @@ internal class CameraFragment : BaseViewModelFragment<FragmentCameraBinding, Cam
         }
     }
 
-    private val settingResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { permissions ->
-
-        requestPermissionCamera()
-    }
+//    private val settingResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { permissions ->
+//
+//        requestPermissionCamera()
+//    }
 
 
     private var infoAdapter by autoCleared<MultiAdapter>()
 
     private var actionAdapter by autoCleared<MultiAdapter>()
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
-    override fun getParameter(): ParametersDefinition {
-
-        return { parametersOf(action) }
-    }
 
     override fun onViewReady() {
         super.onViewReady()
@@ -101,6 +90,12 @@ internal class CameraFragment : BaseViewModelFragment<FragmentCameraBinding, Cam
 
         observeData()
     }
+
+    override fun getParameter(): ParametersDefinition {
+
+        return { parametersOf(action) }
+    }
+
 
     private fun setupInfo() {
 
@@ -325,5 +320,3 @@ class CameraProvider : NavigationProvider {
         }
     }
 }
-
-const val ACTION = "ACTION"

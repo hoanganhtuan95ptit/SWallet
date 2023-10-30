@@ -1,7 +1,6 @@
 package com.simple.wallet.presentation.wallet.select
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
@@ -10,6 +9,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
+import com.simple.bottomsheet.CustomBottomSheetDialog
 import com.simple.coreapp.ui.base.fragments.BaseViewModelSheetFragment
 import com.simple.coreapp.ui.dialogs.OptionFragment.Companion.KEY_REQUEST
 import com.simple.coreapp.utils.autoCleared
@@ -29,6 +29,8 @@ class SelectWalletPopup : BaseViewModelSheetFragment<PopupListBinding, SelectWal
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (dialog as? CustomBottomSheetDialog)?.postponeEnterTransition()
 
         setupBottomSheet()
         setupRecyclerView()
@@ -86,6 +88,8 @@ class SelectWalletPopup : BaseViewModelSheetFragment<PopupListBinding, SelectWal
         walletViewItemList.observe(viewLifecycleOwner) {
 
             adapter?.submitList(it)
+
+            (dialog as? CustomBottomSheetDialog)?.startPostponedEnterTransition()
         }
     }
 
@@ -108,7 +112,6 @@ class SelectWalletProvider : NavigationProvider {
 
         return SelectWalletPopup().apply {
 
-            Log.d("tuanha", "provideFragment: $params")
             arguments = bundleOf(*params.toList().toTypedArray())
         }
     }

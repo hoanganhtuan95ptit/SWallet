@@ -108,7 +108,7 @@
         <item name="android:colorBackground">#FFFFFF</item>
         <item name="colorOnBackgroundTertiary">#EFEDEE</item>
 
-        <item name="colorNavigationBar">#292D2C</item>
+        <item name="colorNavigationBar">#00292D2C</item>
 
         <item name="colorLoading">#E1E1E1</item>
     </style>

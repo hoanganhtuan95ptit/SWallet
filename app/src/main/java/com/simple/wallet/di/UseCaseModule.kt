@@ -1,24 +1,34 @@
 package com.simple.wallet.di
 
-import com.simple.wallet.domain.usecases.ApproveConnectUseCase
-import com.simple.wallet.domain.usecases.ApproveRequestUseCase
-import com.simple.wallet.domain.usecases.CreateWalletUseCase
-import com.simple.wallet.domain.usecases.DetectUseCase
-import com.simple.wallet.domain.usecases.GetAllChainUseCase
-import com.simple.wallet.domain.usecases.GetAllWalletUseCase
-import com.simple.wallet.domain.usecases.GetConnectAsyncUseCase
-import com.simple.wallet.domain.usecases.GetConnectInfoAsyncUseCase
-import com.simple.wallet.domain.usecases.GetInputUseCase
-import com.simple.wallet.domain.usecases.GetRequestAsyncUseCase
-import com.simple.wallet.domain.usecases.ImportWalletUseCase
-import com.simple.wallet.domain.usecases.PairConnectUseCase
-import com.simple.wallet.domain.usecases.RejectConnectUseCase
-import com.simple.wallet.domain.usecases.RejectRequestUseCase
+import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
+import com.simple.wallet.domain.usecases.SyncUseCase
+import com.simple.wallet.domain.usecases.camera.CameraDetectUseCase
+import com.simple.wallet.domain.usecases.camera.GetInputUseCase
+import com.simple.wallet.domain.usecases.chain.GetAllChainUseCase
+import com.simple.wallet.domain.usecases.chain.GetChainByUseCase
+import com.simple.wallet.domain.usecases.chain.GetChainSelectedUseCase
+import com.simple.wallet.domain.usecases.message.SignMessageUseCase
+import com.simple.wallet.domain.usecases.wallet.CreateWalletUseCase
+import com.simple.wallet.domain.usecases.wallet.GetAllWalletUseCase
+import com.simple.wallet.domain.usecases.wallet.GetWalletByUseCase
+import com.simple.wallet.domain.usecases.wallet.GetWalletSelectedUseCase
+import com.simple.wallet.domain.usecases.wallet.ImportWalletUseCase
+import com.simple.wallet.domain.usecases.walletconnect.ApproveConnectUseCase
+import com.simple.wallet.domain.usecases.walletconnect.ApproveRequestUseCase
+import com.simple.wallet.domain.usecases.walletconnect.GetConnectAsyncUseCase
+import com.simple.wallet.domain.usecases.walletconnect.GetConnectInfoAsyncUseCase
+import com.simple.wallet.domain.usecases.walletconnect.GetRequestAsyncUseCase
+import com.simple.wallet.domain.usecases.walletconnect.PairConnectUseCase
+import com.simple.wallet.domain.usecases.walletconnect.RejectConnectUseCase
+import com.simple.wallet.domain.usecases.walletconnect.RejectRequestUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
 
-    single { DetectUseCase(getAll(), getAll()) }
+    single { SyncUseCase(get()) }
+
+
+    single { CameraDetectUseCase(getAll(), getAll()) }
 
     single { GetInputUseCase(getAll()) }
 
@@ -47,4 +57,18 @@ val useCaseModule = module {
     single { ApproveRequestUseCase(get()) }
 
     single { GetRequestAsyncUseCase(get()) }
+
+
+    single { DetectRequestAsyncUseCase(getAll()) }
+
+
+    single { GetChainSelectedUseCase(get()) }
+
+    single { GetWalletSelectedUseCase(get()) }
+
+    single { SignMessageUseCase(get()) }
+
+    single { GetChainByUseCase(get()) }
+
+    single { GetWalletByUseCase(get()) }
 }

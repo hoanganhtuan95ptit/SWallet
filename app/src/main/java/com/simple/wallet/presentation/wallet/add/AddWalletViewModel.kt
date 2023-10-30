@@ -18,8 +18,8 @@ import com.simple.state.ResultState
 import com.simple.wallet.LOGO_APP
 import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Wallet
-import com.simple.wallet.domain.usecases.CreateWalletUseCase
-import com.simple.wallet.domain.usecases.ImportWalletUseCase
+import com.simple.wallet.domain.usecases.wallet.CreateWalletUseCase
+import com.simple.wallet.domain.usecases.wallet.ImportWalletUseCase
 import com.simple.wallet.presentation.adapters.HeaderViewItem
 import com.simple.wallet.presentation.wallet.add.adapters.OptionViewItem
 import kotlinx.coroutines.Dispatchers

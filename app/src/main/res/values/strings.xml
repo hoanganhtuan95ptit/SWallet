@@ -95,4 +95,6 @@
     <string name="time_today">Today</string>
     <string name="time_one_day_ago">Yesterday</string>
     <string name="action_reject">Reject</string>
+    <string name="message_want_to_connect">%s want to connect</string>
+    <string name="title_message">Message</string>
 </resources>

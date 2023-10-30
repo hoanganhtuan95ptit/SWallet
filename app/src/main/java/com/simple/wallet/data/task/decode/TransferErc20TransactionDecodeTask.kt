@@ -4,7 +4,7 @@
 //import com.kyrd.base.utils.ext.executeAsyncByFast
 //import com.kyrd.chain.data.dao.UrlChainDao
 //import com.kyrd.chain.data.dao.chain.token.ConfigTokenDao
-//import com.kyrd.chain.data.dao.chain.token.TokenDao
+//import com.simple.wallet.data.dao.token.TokenDao
 //import com.kyrd.chain.data.task.node.decimal.DecimalParam
 //import com.kyrd.chain.data.task.node.decimal.DecimalTask
 //import com.kyrd.chain.data.task.node.symbol.SymbolParam

@@ -1,6 +1,7 @@
 package com.simple.wallet.data.socket
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.simple.analytics.logAnalytics
@@ -20,6 +21,7 @@ import com.walletconnect.android.CoreClient
 import com.walletconnect.android.cacao.signature.SignatureType
 import com.walletconnect.android.internal.common.exception.CannotFindSequenceForTopic
 import com.walletconnect.android.relay.ConnectionType
+import com.walletconnect.android.relay.NetworkClientTimeout
 import com.walletconnect.android.utils.cacao.sign
 import com.walletconnect.web3.wallet.client.Wallet
 import com.walletconnect.web3.wallet.client.Web3Wallet
@@ -42,6 +44,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import wallet.core.jni.PrivateKey
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 class WalletConnectSocketImpl(
@@ -67,22 +70,26 @@ class WalletConnectSocketImpl(
 
         val relayUrl = "relay.walletconnect.com"
 
-        val projectId = "e34818682e7f61f7bccc5386871516c9"
+        val projectId = "af17b6e141446a916d5632f17e725bad"
 
         val serverUrl = "wss://$relayUrl?projectId=$projectId"
-
-        val connectionType = ConnectionType.AUTOMATIC
 
         val appMetaData = Core.Model.AppMetaData(
             name = "Krystal",
             description = "Simplest Web3 Wallet for Everyone",
             url = "https://krystal.app/",
             icons = listOf("https://krystal.app/assets/images/logos/krystal.svg"),
-            redirect = "kotlin-wallet-wc:/request"
+            redirect = "kotlin-web3wallet:/request"
         )
 
+        val connectionType = ConnectionType.AUTOMATIC
 
-        CoreClient.initialize(metaData = appMetaData, relayServerUrl = serverUrl, connectionType = connectionType, application = application, onError = { error ->
+        val networkClientTimeout = NetworkClientTimeout(
+            timeout = 60 * 1000L,
+            timeUnit = TimeUnit.MILLISECONDS
+        )
+
+        CoreClient.initialize(metaData = appMetaData, relayServerUrl = serverUrl, connectionType = connectionType, application = application, networkClientTimeout = networkClientTimeout, onError = { error ->
 
             logCrashlytics(java.lang.RuntimeException("$TAG CoreClient initialize", error.throwable))
         })
@@ -111,31 +118,42 @@ class WalletConnectSocketImpl(
 
             override fun onSessionProposal(sessionProposal: Wallet.Model.SessionProposal, verifyContext: Wallet.Model.VerifyContext) {
 
+                Log.d("tuanha", "onSessionProposal: ")
                 scope.launch { mutableSharedFlow.emit(sessionProposal) }
             }
 
             override fun onSessionRequest(sessionRequest: Wallet.Model.SessionRequest, verifyContext: Wallet.Model.VerifyContext) {
 
+                Log.d("tuanha", "onSessionRequest: ")
                 scope.launch { mutableSharedFlow.emit(sessionRequest) }
             }
 
             override fun onAuthRequest(authRequest: Wallet.Model.AuthRequest, verifyContext: Wallet.Model.VerifyContext) {
 
+                Log.d("tuanha", "onAuthRequest: ")
                 scope.launch { mutableSharedFlow.emit(authRequest) }
             }
 
             override fun onSessionDelete(sessionDelete: Wallet.Model.SessionDelete) {
 
+                Log.d("tuanha", "onSessionDelete: ")
                 scope.launch { mutableSharedFlow.emit(sessionDelete) }
+            }
+
+            override fun onSessionExtend(session: Wallet.Model.Session) {
+
+                Log.d("tuanha", "onSessionExtend: ")
             }
 
             override fun onSessionSettleResponse(settleSessionResponse: Wallet.Model.SettledSessionResponse) {
 
+                Log.d("tuanha", "onSessionSettleResponse: ")
                 scope.launch { mutableSharedFlow.emit(settleSessionResponse) }
             }
 
             override fun onSessionUpdateResponse(sessionUpdateResponse: Wallet.Model.SessionUpdateResponse) {
 
+                Log.d("tuanha", "onSessionUpdateResponse: ")
                 scope.launch { mutableSharedFlow.emit(sessionUpdateResponse) }
             }
 
@@ -180,12 +198,12 @@ class WalletConnectSocketImpl(
     override fun onSessionProposalAsync() = channelFlow<Request> {
         init()
 
-//        Web3Wallet.getSessionProposals().toList().lastOrNull()?.let { request ->
-//
-//            logAnalytics(TAG to "onSessionProposalAsync", "type" to "getSessionProposals", "data" to request.toJsonV2())
-//
-//            offerActive(request.toSessionRequest())
-//        }
+        Web3Wallet.getSessionProposals().toList().lastOrNull()?.let { request ->
+
+            logAnalytics(TAG to "onSessionProposalAsync", "type" to "getSessionProposals", "data" to request.toJson())
+
+            offerActive(request.toSessionRequest())
+        }
 
         mutableSharedFlow.filterIsInstance<Wallet.Model.SessionProposal>().launchCollect(this) { request ->
 
@@ -262,6 +280,11 @@ class WalletConnectSocketImpl(
             }
         }
 
+//        launch {
+//            val a = "{\"chainId\":\"eip155:1\",\"peerMetaData\":{\"description\":\"Krystal wallet connect, powered by BlockNative\",\"icons\":[\"https://wallet.krystal.app/icon-192x192.png\",\"https://wallet.krystal.app/static/media/krystal.1dda4ba0.svg\"],\"name\":\"Krystal\",\"redirect\":\"\",\"url\":\"https://wallet.krystal.app\",\"verifyUrl\":null},\"request\":{\"id\":1698641037019435,\"method\":\"personal_sign\",\"params\":\"[\\\"0x57656c636f6d6520746f204b72797374616c210a0a5369676e2074686973206d65737361676520746f2070726f766520796f7520686176652061636365737320746f20746869732077616c6c657420616e64207765276c6c206c6f6720796f7520696e2e205468697320776f6e277420636f737420796f7520616e792067617320666565732e0a0a57616c6c657420616464726573733a203078333938303666666631303363356137343963366133383138306333373739643037393364613436360a0a5b323032332d31302d33302030343a34333a3536202b30303030205554435d\\\",\\\"0x39806fff103c5a749c6a38180c3779d0793da466\\\",\\\"1\\\"]\"},\"topic\":\"4963f34ae7c0919405fd12e6af5f1803641bd7e0ed5862366e35dc5bc427696e\"}"
+//
+//            mutableSharedFlow.emit(a.toObjectV2<Wallet.Model.SessionRequest>())
+//        }
 
         awaitClose {
             logAnalytics(TAG to "onSessionRequestAsync: awaitClose")
@@ -367,7 +390,7 @@ class WalletConnectSocketImpl(
         Web3Wallet.pair(pairingParams, onError = { error ->
 
             logCrashlytics(java.lang.RuntimeException("$TAG pair: ", error.throwable))
-            offerActive(ResultState.Failed( error.throwable))
+            offerActive(ResultState.Failed(error.throwable))
         }, onSuccess = {
 
             logAnalytics(TAG to "pair: pairingTopic:$pairingTopic")
@@ -469,7 +492,7 @@ class WalletConnectSocketImpl(
             return@channelFlow
         }
 
-        val issuer = "did:pkh:${request.payloadParams.chainId}:${"wallet.address"}"// todo
+        val issuer = "did:pkh:${request.payloadParams.chainId}:${wallet.addressMap.toList().first()}"
 
         val signature: Wallet.Model.Cacao.Signature = CacaoSigner.sign(
             Web3Wallet.formatMessage(Wallet.Params.FormatMessage(request.payloadParams, issuer)) ?: "",

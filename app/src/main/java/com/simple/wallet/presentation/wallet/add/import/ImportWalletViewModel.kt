@@ -11,7 +11,6 @@ import com.simple.state.ResultState
 import com.simple.task.executeAsyncByFast
 import com.simple.wallet.domain.entities.Wallet
 import com.simple.wallet.domain.tasks.WalletTypeDetectTask
-import com.simple.wallet.domain.usecases.GetWalletUseCase
 import org.jetbrains.annotations.VisibleForTesting
 
 class ImportWalletViewModel(

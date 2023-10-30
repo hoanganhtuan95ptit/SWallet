@@ -19,15 +19,15 @@ import com.simple.wallet.domain.entities.scan.ScanData
 import com.simple.wallet.domain.entities.scan.ScanInputType
 import com.simple.wallet.domain.tasks.CameraActionTask
 import com.simple.wallet.domain.tasks.CameraInfoTask
-import com.simple.wallet.domain.usecases.DetectUseCase
-import com.simple.wallet.domain.usecases.GetInputUseCase
+import com.simple.wallet.domain.usecases.camera.CameraDetectUseCase
+import com.simple.wallet.domain.usecases.camera.GetInputUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal class CameraViewModel(
     private val action: String,
 
-    private val detectUseCase: DetectUseCase,
+    private val cameraDetectUseCase: CameraDetectUseCase,
     private val getInputUseCase: GetInputUseCase,
 
     private val cameraInfoTaskList: List<CameraInfoTask>,
@@ -72,7 +72,7 @@ internal class CameraViewModel(
 
         imageProxy.use { imageProxy ->
 
-            processState.postDifferentValue(detectUseCase.execute(DetectUseCase.Param(imageProxy, size, points, inputType, action)))
+            processState.postDifferentValue(cameraDetectUseCase.execute(CameraDetectUseCase.Param(imageProxy, size, points, inputType, action)))
         }
     }
 

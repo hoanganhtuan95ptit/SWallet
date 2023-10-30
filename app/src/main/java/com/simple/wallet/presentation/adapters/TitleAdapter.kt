@@ -6,11 +6,11 @@ import com.simple.adapter.ViewItemCloneable
 import com.simple.coreapp.utils.extentions.emptyText
 import com.simple.coreapp.utils.extentions.setText
 import com.simple.coreapp.utils.extentions.text.Text
-import com.simple.wallet.databinding.ItemTitleCenterBinding
+import com.simple.wallet.databinding.ItemTitleBinding
 
-class TitleAdapter : ViewItemAdapter<TitleViewItem, ItemTitleCenterBinding>() {
+class TitleAdapter : ViewItemAdapter<TitleViewItem, ItemTitleBinding>() {
 
-    override fun bind(binding: ItemTitleCenterBinding, viewType: Int, position: Int, item: TitleViewItem) {
+    override fun bind(binding: ItemTitleBinding, viewType: Int, position: Int, item: TitleViewItem) {
         super.bind(binding, viewType, position, item)
 
         binding.tvTitle.setText(item.name)

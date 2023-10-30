@@ -8,7 +8,7 @@ import com.simple.coreapp.utils.extentions.getOrEmpty
 import com.simple.coreapp.utils.extentions.liveData
 import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
 import com.simple.wallet.domain.entities.Chain
-import com.simple.wallet.domain.usecases.GetAllChainUseCase
+import com.simple.wallet.domain.usecases.chain.GetAllChainUseCase
 import com.simple.wallet.presentation.chain.adapters.SelectChainViewItem
 
 class SelectChainViewModel(

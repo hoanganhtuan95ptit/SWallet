@@ -20,22 +20,27 @@ import com.simple.navigation.utils.ext.offerDeepLink
 import com.simple.navigation.utils.ext.setNavigationResultListener
 import com.simple.wallet.DATA
 import com.simple.wallet.DP_8
+import com.simple.wallet.PARAM_ACTION
+import com.simple.wallet.PAYLOAD_PAIR
+import com.simple.wallet.PAYLOAD_SLIDE
 import com.simple.wallet.R
 import com.simple.wallet.databinding.FragmentHomeBinding
 import com.simple.wallet.domain.entities.Chain
+import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.domain.entities.Wallet
+import com.simple.wallet.domain.entities.scan.CameraOutputType
+import com.simple.wallet.domain.entities.scan.ScanData
 import com.simple.wallet.presentation.home.adapters.CategoryAdapter
+import com.simple.wallet.utils.exts.encodeUrl
 import com.simple.wallet.utils.exts.imageDisplay
 import com.simple.wallet.utils.exts.nameDisplay
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.gpu.SketchFilterTransformation
-import org.koin.android.ext.android.inject
 
 class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>() {
 
 
     private var categoryAdapter by autoCleared<MultiAdapter>()
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,6 +87,12 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
             viewModel.updateChain(data)
         }
 
+        binding.tvChain.setDebouncedClickListener {
+
+            offerDeepLink("/select-chain?$KEY_REQUEST=$keyRequestChain&chainId=${viewModel.chain.value?.id}")
+        }
+
+
         val keyRequestWallet = "KEY_REQUEST_WALLET"
 
         setNavigationResultListener(keyRequestWallet) { _, result ->
@@ -91,15 +102,29 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
             viewModel.updateWallet(data)
         }
 
-        binding.tvChain.setDebouncedClickListener {
-
-            offerDeepLink("/select-chain?$KEY_REQUEST=$keyRequestChain&chainId=${viewModel.chain.value?.id}")
-        }
-
         binding.tvWallet.setDebouncedClickListener {
 
             offerDeepLink("/select-wallet?$KEY_REQUEST=$keyRequestWallet&walletId=${viewModel.chain.value?.id}&isSupportAllWallet=true")
         }
+
+
+        val keyRequestScan = "KEY_REQUEST_SCAN"
+
+        setNavigationResultListener(keyRequestScan) { _, result ->
+
+            val data = result.getSerializableOrNull<ScanData>(DATA) ?: return@setNavigationResultListener
+
+            if (data.outputType == CameraOutputType.WALLET_CONNECT) {
+
+                offerDeepLink("/wallet-connect?$PAYLOAD_PAIR=${data.text.encodeUrl()}&$PAYLOAD_SLIDE=${Request.Slide.ANOTHER_DEVICE.value}")
+            }
+        }
+
+        binding.ivScan.setDebouncedClickListener {
+
+            offerDeepLink("/camera?$KEY_REQUEST=$keyRequestScan&$PARAM_ACTION=scan")
+        }
+
 
         binding.ivAddWallet.setDebouncedClickListener {
 

@@ -81,11 +81,10 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.0")
     kapt("androidx.room:room-compiler:2.6.0")
 
-    api(platform("com.walletconnect:android-bom:1.13.0"))
-
-    api("com.walletconnect:android-core")
-    api("com.walletconnect:web3wallet")
-    api("com.walletconnect:sign")
+    implementation(platform("com.walletconnect:android-bom:1.18.0"))
+    implementation("com.walletconnect:android-core")
+    implementation("com.walletconnect:web3wallet")
+    implementation("com.walletconnect:sign")
 
     implementation("jp.wasabeef:glide-transformations:4.3.0")
     implementation("jp.co.cyberagent.android:gpuimage:2.1.0")
@@ -103,6 +102,7 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.4.0-alpha02")
     implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0")
 
+    implementation ("com.google.crypto.tink:tink-android:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
 

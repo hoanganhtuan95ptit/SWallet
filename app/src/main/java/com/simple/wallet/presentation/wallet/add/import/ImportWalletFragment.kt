@@ -37,10 +37,10 @@ import com.simple.state.toSuccess
 import com.simple.wallet.DATA
 import com.simple.wallet.DP_24
 import com.simple.wallet.DP_32
+import com.simple.wallet.PARAM_ACTION
 import com.simple.wallet.R
 import com.simple.wallet.databinding.FragmentImportWalletBinding
 import com.simple.wallet.domain.entities.scan.ScanData
-import com.simple.wallet.presentation.camera.ACTION
 import com.simple.wallet.presentation.wallet.add.AddWalletViewModel
 
 class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, ImportWalletViewModel>() {
@@ -157,7 +157,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
         binding.ivScan.setDebouncedClickListener {
 
-            offerDeepLink("/camera?$KEY_REQUEST=$REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET&$ACTION=scan")
+            offerDeepLink("/camera?$KEY_REQUEST=$REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET&$PARAM_ACTION=scan")
         }
 
 

@@ -7,8 +7,11 @@ import java.math.BigInteger
 val LOGO_APP by lazy { "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2wNCC0-K9uP7MXLt5E7_i9YmEEDOxNwhp5YVwtzl2YDXEOqG7xGcP6erV5MHl4YRIyto&usqp=CAU" }
 
 val DATA by lazy { "DATA" }
+val DATA_STATE by lazy { "DATA_STATE" }
 
 val PARAM_DATA by lazy { "PARAM_DATA" }
+
+val PARAM_ACTION by lazy { "PARAM_ACTION" }
 val PAYLOAD_PAIR by lazy { "PAYLOAD_PAIR" }
 val PAYLOAD_SLIDE by lazy { "PAYLOAD_SLIDE" }
 val PARAM_RESULT_STATUS by lazy { "PARAM_RESULT_STATUS" }

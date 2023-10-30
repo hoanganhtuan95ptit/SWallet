@@ -1,14 +1,13 @@
 package com.simple.wallet.presentation.message.sign
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.children
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -19,8 +18,7 @@ import androidx.transition.TransitionSet
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
 import com.simple.core.utils.extentions.asObject
-import com.simple.core.utils.extentions.asObjectOrNull
-import com.simple.core.utils.extentions.resumeActive
+import com.simple.core.utils.extentions.toObjectOrNull
 import com.simple.coreapp.ui.adapters.SpaceAdapter
 import com.simple.coreapp.ui.base.fragments.BaseViewModelSheetFragment
 import com.simple.coreapp.ui.dialogs.OptionFragment.Companion.KEY_REQUEST
@@ -28,31 +26,39 @@ import com.simple.coreapp.utils.AppException
 import com.simple.coreapp.utils.autoCleared
 import com.simple.coreapp.utils.ext.getSerializableOrNull
 import com.simple.coreapp.utils.ext.getStringOrEmpty
+import com.simple.coreapp.utils.extentions.beginTransitionAwait
 import com.simple.coreapp.utils.extentions.doOnHeightNavigationChange
 import com.simple.coreapp.utils.extentions.observeLaunch
+import com.simple.coreapp.utils.extentions.observeQueue
+import com.simple.coreapp.utils.extentions.scaleAnimAwait
 import com.simple.coreapp.utils.extentions.setDebouncedClickListener
 import com.simple.coreapp.utils.extentions.setVisible
+import com.simple.coreapp.utils.extentions.submitListAwait
 import com.simple.coreapp.utils.extentions.toPx
 import com.simple.coreapp.utils.extentions.vibrate
+import com.simple.navigation.NavigationProvider
 import com.simple.navigation.domain.entities.NavigationEvent
+import com.simple.navigation.utils.ext.setNavigationResult
 import com.simple.state.ResultState
 import com.simple.state.isFailed
 import com.simple.state.isStart
 import com.simple.state.isSuccess
 import com.simple.state.toSuccess
+import com.simple.wallet.DATA
+import com.simple.wallet.DATA_STATE
 import com.simple.wallet.PARAM_DATA
 import com.simple.wallet.R
 import com.simple.wallet.databinding.LayoutActionConfirmBinding
 import com.simple.wallet.databinding.PopupListBinding
-import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.presentation.adapters.BottomAdapter
 import com.simple.wallet.presentation.adapters.HeaderAdapter
 import com.simple.wallet.presentation.adapters.KeyValueAdapter
 import com.simple.wallet.presentation.adapters.MessageAdapter
 import com.simple.wallet.presentation.adapters.MessageViewItem
+import com.simple.wallet.presentation.adapters.TextCaptionAdapter
 import com.simple.wallet.presentation.adapters.TokenApproveAdapter
-import kotlinx.coroutines.suspendCancellableCoroutine
+import com.simple.wallet.utils.exts.decodeUrl
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.parameter.parametersOf
 
@@ -68,12 +74,6 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
     private val request: Request by lazy {
 
         requireArguments().getSerializableOrNull(PARAM_DATA)!!
-    }
-
-
-    private val chainId: Long by lazy {
-
-        request.message?.chainId ?: Chain.ALL_NETWORK
     }
 
 
@@ -96,9 +96,6 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
         setupRecyclerView()
 
         observeData()
-//        observeChainData()
-//        observeWalletData()
-//        observerCurrencyData()
 
         requireContext().vibrate()
 
@@ -107,17 +104,13 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
         container.addView(bindingAction!!.root, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM))
     }
 
-    override fun dismiss() {
-//
-//        val state = viewModel.signMessageState.value
-//
-//        val resultData = state?.toSuccess()?.data ?: state?.toFailed()?.message ?: ""
-//
-//        val resultStatus = state?.isSuccess() == true
-//
-//        setNavigationResult(keyRequest, bundleOf(PARAM_DATA to viewModel.mRequest, PARAM_RESULT_STATUS to resultStatus, PARAM_RESULT_DATA to resultData))
+    override fun onDismiss(dialog: DialogInterface) {
 
-        super.dismiss()
+        val state = viewModel.signMessageState.value
+
+        setNavigationResult(keyRequest, bundleOf(DATA to viewModel.mRequest, DATA_STATE to state))
+
+        super.onDismiss(dialog)
     }
 
     override fun getParameter(): ParametersDefinition {
@@ -147,13 +140,7 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
 
     private fun setupBottomSheet() {
 
-        binding ?: return
-
-        val bottomSheet = bottomSheet ?: return
-
-        val behavior = BottomSheetBehavior.from(bottomSheet)
-
-        val bottomSheetParent = bottomSheet.parent as ViewGroup
+        val behavior = behavior ?: return
 
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
@@ -165,13 +152,6 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
                 updateLocationAction()
             }
         })
-
-        bottomSheet.doOnLayout {
-
-            behavior.peekHeight = (bottomSheetParent.parent as View).height
-        }
-
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     private fun setupWindowInset() {
@@ -206,6 +186,8 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
             viewModel.updateConfirm()
         }
 
+        val textCaptionAdapter = TextCaptionAdapter()
+
         val tokenApproveAdapter = TokenApproveAdapter()
 
 
@@ -219,6 +201,7 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
             headerAdapter,
             bottomAdapter,
             keyValueAdapter,
+            textCaptionAdapter,
             messageInfoAdapter,
             tokenApproveAdapter,
         ).apply {
@@ -268,20 +251,7 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
 
                 val itemView = binding?.recyclerView?.findViewHolderForAdapterPosition(index)?.itemView ?: return@observeLaunch
 
-                suspendCancellableCoroutine { a ->
-
-                    itemView.animate().setDuration(300).scaleX(1.1f).scaleY(1.1f).withEndAction {
-                        a.resumeActive(true)
-                    }.start()
-                }
-
-                suspendCancellableCoroutine { a ->
-
-                    itemView.animate().setDuration(300).scaleX(1f).scaleY(1f).withEndAction {
-                        a.resumeActive(true)
-                    }.start()
-                }
-
+                itemView.scaleAnimAwait(1.1f, 500, true)
 
                 return@observeLaunch
             }
@@ -298,51 +268,17 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
             TransitionManager.beginDelayedTransition(bindingAction.root, TransitionSet().setDuration(350).addTransition(ChangeBounds()).addTransition(Fade()))
         }
 
-        viewItemListDisplay.observeLaunch(viewLifecycleOwner) {
+        viewItemListDisplay.observeQueue(viewLifecycleOwner, tag = this@SignMessageConfirmFragment.javaClass.name, context = handler) {
 
-            val bottomSheet = bottomSheet ?: return@observeLaunch
+            val binding = binding ?: return@observeQueue
 
-            adapter?.submitList(it) {
+            val bottomSheet = bottomSheet ?: return@observeQueue
 
-                TransitionManager.beginDelayedTransition(bottomSheet.parent.asObjectOrNull<ViewGroup>()!!, TransitionSet().setDuration(350).addTransition(ChangeBounds()).addTransition(Fade()))
-            }
+            binding.recyclerView.submitListAwait(it)
+
+            bottomSheet.beginTransitionAwait(TransitionSet().setDuration(350).addTransition(ChangeBounds()).addTransition(Fade()))
         }
     }
-//
-//    private fun observeChainData() = with(chainViewModelV2) {
-//
-//        chainIdAndChain.observe(viewLifecycleOwner) {
-//
-//            viewModel.updateCurrentChain(it[chainId] ?: return@observe)
-//        }
-//
-//        chainIdAndNativeToken.observe(viewLifecycleOwner) {
-//
-//            viewModel.updateNativeToken(it[chainId] ?: return@observe)
-//        }
-//    }
-//
-//    private fun observeWalletData() = with(walletViewModel) {
-//
-//        walletList.observe(viewLifecycleOwner) { list ->
-//
-//            binding ?: return@observe
-//
-//            val walletAddress = this@SignMessageConfirmFragment.request.getWalletAddressOrNull() ?: ""
-//
-//            val wallet = list.find { it.address.equals(walletAddress, true) } ?: walletAddress.toWallet()
-//
-//            viewModel.updateCurrentWallet(wallet)
-//        }
-//    }
-//
-//    private fun observerCurrencyData() = with(settingViewModel) {
-//
-//        currencyInfo.observe(viewLifecycleOwner) {
-//
-//            viewModel.updateCurrency(it)
-//        }
-//    }
 
     private fun updateLocationAction() {
 
@@ -374,10 +310,32 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
     }
 }
 
-data class SignMessageEvent(val keyRequest: String, val data: Request) : NavigationEvent() {
+class SignMessageConfirmEvent(val keyRequest: String, val data: Request) : NavigationEvent() {
 
     override fun provideFragment(): Fragment {
 
         return SignMessageConfirmFragment.newInstance(keyRequest, data)
+    }
+}
+
+class SignMessageConfirmProvider : NavigationProvider {
+
+    override fun deepLink(): String {
+
+        return "/sign-message-confirm"
+    }
+
+    override fun provideFragment(deepLink: String, params: Map<String, String>): Fragment {
+
+        return SignMessageConfirmFragment().apply {
+
+            val paramList = params.mapValues {
+
+                if (it.key == PARAM_DATA) it.value.decodeUrl().toObjectOrNull<Request>()
+                else it.value
+            }
+
+            arguments = bundleOf(*paramList.toList().toTypedArray())
+        }
     }
 }

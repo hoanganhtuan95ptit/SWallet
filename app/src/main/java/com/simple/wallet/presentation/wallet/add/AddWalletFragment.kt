@@ -3,10 +3,9 @@ package com.simple.wallet.presentation.wallet.add
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
+import com.simple.bottomsheet.CustomBottomSheetDialog
 import com.simple.coreapp.ui.adapters.SpaceAdapter
 import com.simple.coreapp.ui.base.fragments.BaseViewModelSheetFragment
 import com.simple.coreapp.utils.autoCleared
@@ -30,40 +29,11 @@ class AddWalletFragment : BaseViewModelSheetFragment<PopupListBinding, AddWallet
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupBottomSheet()
+        (dialog as? CustomBottomSheetDialog)?.postponeEnterTransition()
+
         setupRecyclerView()
 
         observeData()
-    }
-
-
-    private fun setupBottomSheet() {
-
-        binding ?: return
-
-        val behavior = behavior ?: return
-
-        val bottomSheet = bottomSheet ?: return
-
-        val coordinator = coordinator ?: return
-
-
-        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
-            }
-        })
-
-        bottomSheet.doOnLayout {
-
-            behavior.peekHeight = coordinator.height
-        }
-
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     private fun setupRecyclerView() {
@@ -88,8 +58,6 @@ class AddWalletFragment : BaseViewModelSheetFragment<PopupListBinding, AddWallet
 
             setRecyclerView(binding.recyclerView)
         }
-
-        binding.recyclerView.itemAnimator = null
     }
 
     private fun observeData() = with(viewModel) {
@@ -97,6 +65,8 @@ class AddWalletFragment : BaseViewModelSheetFragment<PopupListBinding, AddWallet
         viewItemList.observe(viewLifecycleOwner) {
 
             adapter?.submitList(it)
+
+            (dialog as? CustomBottomSheetDialog)?.startPostponedEnterTransition()
         }
     }
 }

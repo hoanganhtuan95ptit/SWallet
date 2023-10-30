@@ -26,9 +26,31 @@ import com.simple.wallet.presentation.adapters.HeaderViewItem
 import com.simple.wallet.presentation.adapters.MessageViewItem
 import java.math.BigInteger
 
-fun Request.toHeaderViewItem() = HeaderViewItem("").apply {
+fun Request.toConnectHeaderViewItem() = HeaderViewItem("").apply {
 
-    val data = this@toHeaderViewItem
+    val data = this@toConnectHeaderViewItem
+
+    val sessionProposal = kotlin.runCatching { sessionProposal }.getOrNull()
+
+    logo = data.power?.logo?.toImage() ?: emptyImage()
+
+    title = if (sessionProposal != null) {
+
+        TextRes(
+            R.string.message_want_to_connect,
+            TextSpan(data.power?.name?.toText() ?: emptyText(), StyleSpan(Typeface.BOLD)),
+        )
+    } else {
+
+        emptyText()
+    }
+
+    updateHeaderViewItem(request = this@toConnectHeaderViewItem, headerViewItem = this)
+}
+
+fun Request.toTransactionHeaderViewItem() = HeaderViewItem("").apply {
+
+    val data = this@toTransactionHeaderViewItem
 
     logo = data.power?.logo?.toImage() ?: emptyImage()
 
@@ -82,6 +104,13 @@ fun Request.toHeaderViewItem() = HeaderViewItem("").apply {
         emptyText()
     }
 
+    updateHeaderViewItem(request = this@toTransactionHeaderViewItem, headerViewItem = this)
+}
+
+
+private fun updateHeaderViewItem(request: Request, headerViewItem: HeaderViewItem) = headerViewItem.apply {
+
+    val data = request
 
     when (data.power?.status) {
 
@@ -117,7 +146,8 @@ fun Request.toHeaderViewItem() = HeaderViewItem("").apply {
     }
 }
 
-fun Request?.toMessageViewItem(mIsConfirm: Boolean): List<ViewItemCloneable> = this.run {
+
+fun Request?.toMessageViewItem(isConfirm: Boolean): List<ViewItemCloneable> = this.run {
 
     if (this == null) {
 
@@ -132,13 +162,21 @@ fun Request?.toMessageViewItem(mIsConfirm: Boolean): List<ViewItemCloneable> = t
         list.add(TextRes(R.string.message_warning_url_risk, TextImage(R.drawable.ic_check_box_normal_accent_24dp, 16.toPx())))
     }
 
-    if (list.isNotEmpty()) return@run MessageViewItem().apply {
+    if (list.isNotEmpty()) return@run MessageViewItem(id = "KEY").apply {
 
         list.add(0, TextSpan(R.string.message_warning.toText(), StyleSpan(Typeface.BOLD)))
 
         message = list.toText("\n").withTextColor(com.google.android.material.R.attr.colorError)
-        messageIcon = R.drawable.img_error_24dp.toImage()
+
+        messageIcon = if (isConfirm) {
+            R.drawable.ic_check_box_select_accent_24dp.toImage()
+        } else {
+            R.drawable.ic_check_box_normal_accent_24dp.toImage()
+        }
+
         background = R.drawable.bg_corners_16dp_solid_error_10
+
+        needConfirm = true
     }.let {
 
         listOf(it)

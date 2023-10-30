@@ -19,6 +19,8 @@ import wallet.core.jni.Curve
 import wallet.core.jni.PrivateKey
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.URLDecoder
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -100,6 +102,9 @@ fun String.takeIfBlank() = takeIf { it.isBlank() }
 fun String.takeIfNotBlank() = takeIf { it.isNotBlank() }
 
 
+fun <T, L : Collection<T>> L.takeIfNotEmpty() = takeIf { it.isNotEmpty() }
+
+
 fun String.uppercaseFirst(): String = if (length < 1) {
 
     this
@@ -117,6 +122,11 @@ fun String?.hexToBigIntegerOrZero() = hexToBigIntegerOrNull() ?: BigInteger.ZERO
 fun String?.hexToBigDecimalOrNull() = hexToBigIntegerOrNull()?.toBigDecimal()
 
 fun String?.hexToBigDecimalOrZero() = hexToBigDecimalOrNull() ?: BigDecimal.ZERO
+
+
+fun String.encodeUrl() = URLEncoder.encode(this, Charsets.UTF_8.name())
+
+fun String.decodeUrl() = URLDecoder.decode(this, Charsets.UTF_8.name())
 
 
 fun String?.takeIfWalletConnectPair() = (if (this == null) {

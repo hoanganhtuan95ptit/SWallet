@@ -2,11 +2,11 @@ package com.simple.wallet.data.repositories
 
 import com.simple.state.ResultState
 import com.simple.state.doSuccess
-import com.simple.wallet.data.dao.RoomWalletConnectSession
-import com.simple.wallet.data.dao.WalletConnectSessionDao
+import com.simple.wallet.data.dao.walletconnect.RoomWalletConnectSession
+import com.simple.wallet.data.dao.walletconnect.WalletConnectSessionDao
 import com.simple.wallet.data.socket.WalletConnectSocket
 import com.simple.wallet.domain.entities.Request
-import com.simple.wallet.domain.entities.Request.Slide.Companion.toSessionRequestSlideOrDefault
+import com.simple.wallet.domain.entities.Request.Slide.Companion.toRequestSlideOrDefault
 import com.simple.wallet.domain.repositories.WalletConnectRepository
 import com.simple.wallet.utils.exts.sessionProposal
 import com.walletconnect.web3.wallet.client.Wallet
@@ -36,7 +36,7 @@ class WalletConnectRepositoryImpl(
             val sessionProposal = it.sessionProposal!!
 
             val slide = pairingTopicAndSlideMap[sessionProposal.pairingTopic]
-                ?: walletConnectSessionDao.getListByPairingTopic(pairingTopic = sessionProposal.pairingTopic).firstOrNull()?.connectSource?.toSessionRequestSlideOrDefault()
+                ?: walletConnectSessionDao.getListByPairingTopic(pairingTopic = sessionProposal.pairingTopic).firstOrNull()?.connectSource?.toRequestSlideOrDefault()
                 ?: return@map it
 
             it.slide = slide
@@ -60,7 +60,7 @@ class WalletConnectRepositoryImpl(
                 walletConnectSessionDao.getListByTopic(topic = topic)
             }.run {
 
-                first().connectSource.toSessionRequestSlideOrDefault()
+                first().connectSource.toRequestSlideOrDefault()
             }
 
             it.slide = slide
@@ -99,7 +99,7 @@ class WalletConnectRepositoryImpl(
         state.doSuccess {
 
             val slide = pairingTopicAndSlideMap[sessionProposal.pairingTopic]
-                ?: walletConnectSessionDao.getListByPairingTopic(pairingTopic = sessionProposal.pairingTopic).firstOrNull()?.connectSource?.toSessionRequestSlideOrDefault()
+                ?: walletConnectSessionDao.getListByPairingTopic(pairingTopic = sessionProposal.pairingTopic).firstOrNull()?.connectSource?.toRequestSlideOrDefault()
                 ?: return@doSuccess
 
             walletConnectSessionDao.insertOrUpdate(RoomWalletConnectSession(topic = it.session.topic, pairToken = sessionProposal.pairingTopic, connectSource = slide.value))

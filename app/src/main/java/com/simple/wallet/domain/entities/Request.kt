@@ -1,10 +1,7 @@
 package com.simple.wallet.domain.entities
 
-import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.simple.core.utils.extentions.asObjectOrNull
-import kotlinx.parcelize.Parcelize
-import java.io.Serializable
 
 class Request(
     val id: Long = 0,
@@ -63,9 +60,9 @@ class Request(
 
         companion object {
 
-            fun String?.toSessionRequestSlideOrDefault() = toSessionRequestSlide() ?: ANOTHER_DEVICE
+            fun String?.toRequestSlide() = values().find { it.value.equals(this, true) }
 
-            fun String?.toSessionRequestSlide() = values().find { it.value.equals(this, true) }
+            fun String?.toRequestSlideOrDefault() = toRequestSlide() ?: ANOTHER_DEVICE
         }
     }
 

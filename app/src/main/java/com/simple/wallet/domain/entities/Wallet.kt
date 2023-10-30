@@ -1,17 +1,22 @@
 package com.simple.wallet.domain.entities
 
-import kotlinx.parcelize.Parcelize
-
 data class Wallet(
 
     var id: String? = null,
 
     var name: String = "",
 
+    var cipher: String = "",
+
     var type: Type = Type.EMPTY,
 
     var addressMap: Map<String, Chain.Type> = emptyMap()
 ) : Entity {
+
+
+    val chainType: List<Chain.Type>
+        get() = addressMap.toList().associateBy { it.second }.keys.toList()
+
 
     enum class Type(val value: String) {
 
@@ -28,6 +33,6 @@ data class Wallet(
 
         val EMPTY = Wallet(ID_EMPTY)
 
-        fun String.toWalletType() = Wallet.Type.values().find { this.equals(it.value, true) } ?: error("not support $this")
+        fun String.toWalletType() = Wallet.Type.values().first { this.equals(it.value, true) }
     }
 }

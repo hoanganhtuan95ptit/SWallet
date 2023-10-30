@@ -11,7 +11,6 @@ import com.simple.wallet.domain.entities.Message.Type.Companion.toMessageType
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.domain.entities.Request.Method.Companion.toSessionMethod
 import com.simple.wallet.domain.entities.Transaction
-import com.simple.wallet.domain.entities.putExtra
 import com.walletconnect.web3.wallet.client.Wallet
 
 
@@ -24,34 +23,22 @@ fun Wallet.Model.SessionRequest.toSessionRequest() = Request(
 
     val paramList = this@toSessionRequest.request.params.toListOrEmpty<JsonNode>()
 
-    Request.Power(
+    topic = this@toSessionRequest.topic
+
+    power = Request.Power(
         url = this@toSessionRequest.peerMetaData!!.url,
         name = this@toSessionRequest.peerMetaData!!.name,
         logo = this@toSessionRequest.peerMetaData!!.icons[0]
-    ).let {
+    )
 
-        putExtra(Request.ExtraType.POWER, it)
+    message = paramList.getMessageOrNull(chainId, method)?.let {
+
+        Message(it, chainId, this@toSessionRequest.request.method.toMessageType())
     }
 
-    paramList.getMessageOrNull(chainId, method)?.let {
+    transaction = paramList.getTransactionOrNull(chainId, method)
 
-        Message("it", chainId, this@toSessionRequest.request.method.toMessageType())
-    }?.let {
-
-        putExtra(Request.ExtraType.MESSAGE, it)
-    }
-
-    paramList.getTransactionOrNull(chainId, method)?.let {
-
-        putExtra(Request.ExtraType.TRANSACTION, it)
-    }
-
-    paramList.getWalletAddressOrNull(chainId, method)?.let {
-
-        putExtra(Request.ExtraType.WALLET_ADDRESS, it)
-    }
-
-    putExtra(Request.ExtraType.TOPIC, this@toSessionRequest.topic)
+    walletAddress = paramList.getWalletAddressOrNull(chainId, method)
 }
 
 private fun List<JsonNode>.getMessageOrNull(chainId: Long, method: Enum<*>) = takeIf {
@@ -62,7 +49,7 @@ private fun List<JsonNode>.getMessageOrNull(chainId: Long, method: Enum<*>) = ta
     val item = it.asObjectOrNull<TextNode>()?.getString()
 
     !item.isAddress(chainId)
-}.run {
+}?.run {
 
     getString()
 }
@@ -105,7 +92,7 @@ private fun List<JsonNode>.getWalletAddressOrNull(chainId: Long, method: Enum<*>
     val item = it.asObjectOrNull<TextNode>()?.getString()
 
     item.isAddress(chainId)
-} ?: run {
+}?.getString() ?: run {
 
     getTransactionOrNull(chainId, method)?.from
 }
