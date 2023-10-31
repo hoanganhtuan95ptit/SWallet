@@ -95,7 +95,7 @@
         <item name="colorAccent10">#1037aa5f</item>
         <item name="colorOnAccent">#FFFFFF</item>
 
-        <item name="colorDivider">#EAEAEA</item>
+        <item name="colorDivider">#50111111</item>
     </style>
 
     <style name="Popup" parent="Theme.SWallet">

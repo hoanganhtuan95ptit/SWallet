@@ -11,6 +11,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -30,6 +31,7 @@ import com.simple.coreapp.utils.extentions.beginTransitionAwait
 import com.simple.coreapp.utils.extentions.doOnHeightNavigationChange
 import com.simple.coreapp.utils.extentions.observeLaunch
 import com.simple.coreapp.utils.extentions.observeQueue
+import com.simple.coreapp.utils.extentions.postAwait
 import com.simple.coreapp.utils.extentions.scaleAnimAwait
 import com.simple.coreapp.utils.extentions.setDebouncedClickListener
 import com.simple.coreapp.utils.extentions.setVisible
@@ -43,7 +45,6 @@ import com.simple.state.ResultState
 import com.simple.state.isFailed
 import com.simple.state.isStart
 import com.simple.state.isSuccess
-import com.simple.state.toSuccess
 import com.simple.wallet.DATA
 import com.simple.wallet.DATA_STATE
 import com.simple.wallet.PARAM_DATA
@@ -58,13 +59,12 @@ import com.simple.wallet.presentation.adapters.MessageAdapter
 import com.simple.wallet.presentation.adapters.MessageViewItem
 import com.simple.wallet.presentation.adapters.TextCaptionAdapter
 import com.simple.wallet.presentation.adapters.TokenApproveAdapter
+import com.simple.wallet.presentation.message.sign.SignMessageConfirmViewModel.ButtonState
 import com.simple.wallet.utils.exts.decodeUrl
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.parameter.parametersOf
 
-
 class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, SignMessageConfirmViewModel>() {
-
 
     private val keyRequest: String by lazy {
 
@@ -214,25 +214,18 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
 
     private fun observeData() = with(viewModel) {
 
-        buttonState.observe(viewLifecycleOwner) { state ->
+        buttonState.observeQueue(viewLifecycleOwner, tag = this@SignMessageConfirmFragment.javaClass.name + "buttonState", context = handler) { state ->
 
-            val bindingAction = bindingAction ?: return@observe
+            val bindingAction = bindingAction ?: return@observeQueue
 
+            bindingAction.root.postAwait()
 
-            val buttonState = state.toSuccess()?.data
+            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350).setOrdering(TransitionSet.ORDERING_TOGETHER)) {
 
-            bindingAction.tvPositive.isClickable = buttonState == SignMessageConfirmViewModel.ButtonState.REVIEW_TRANSACTION
-            bindingAction.tvPositive.alpha = if (!bindingAction.tvPositive.isClickable) 0.2f else 1f
+                bindButtonState(state)
+            } else {
 
-
-            bindingAction.progressPositive.isVisible = state.isStart()
-
-
-            bindingAction.tvPositive.text = when (state.toSuccess()?.data) {
-
-                SignMessageConfirmViewModel.ButtonState.WATCH_WALLET -> getString(R.string.action_not_support)
-
-                else -> getString(R.string.action_confirm)
+                bindButtonState(state)
             }
         }
 
@@ -277,6 +270,39 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
             binding.recyclerView.submitListAwait(it)
 
             bottomSheet.beginTransitionAwait(TransitionSet().setDuration(350).addTransition(ChangeBounds()).addTransition(Fade()))
+        }
+    }
+
+    private fun bindButtonState(state: Enum<*>) {
+
+        val bindingAction = bindingAction ?: return
+
+        bindingAction.tvPositive.isClickable = state in listOf(ButtonState.REVIEW)
+        bindingAction.tvPositive.isVisible = when (state) {
+            in listOf(ButtonState.APPROVAL_LOADING, ButtonState.DETECT_LOADING, ButtonState.REVIEW) -> true
+            else -> false
+        }
+        bindingAction.tvPositive.alpha = when (state) {
+            in listOf(ButtonState.APPROVAL_LOADING, ButtonState.REVIEW) -> 1f
+            else -> 0.2f
+        }
+        bindingAction.tvPositive.text = when (state) {
+            ButtonState.APPROVAL_LOADING -> getString(R.string.message_confirming)
+            ButtonState.WATCH_WALLET -> getString(R.string.action_not_support)
+            else -> getString(R.string.action_confirm)
+        }
+        bindingAction.progressPositive.setVisible(state in listOf(ButtonState.APPROVAL_LOADING, ButtonState.DETECT_LOADING))
+
+
+        bindingAction.tvNegative.isClickable = state in listOf(ButtonState.DETECT_FAILED, ButtonState.REVIEW)
+        bindingAction.tvNegative.isVisible = when (state) {
+            in listOf(ButtonState.DETECT_FAILED, ButtonState.DETECT_LOADING, ButtonState.REVIEW) -> true
+
+            else -> false
+        }
+        bindingAction.tvNegative.text = when (state) {
+            ButtonState.DETECT_FAILED -> getString(R.string.action_cancel)
+            else -> getString(R.string.action_reject)
         }
     }
 

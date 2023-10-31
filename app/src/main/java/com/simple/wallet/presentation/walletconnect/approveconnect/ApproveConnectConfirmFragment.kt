@@ -23,6 +23,7 @@ import com.simple.coreapp.ui.base.fragments.BaseViewModelSheetFragment
 import com.simple.coreapp.ui.dialogs.OptionFragment
 import com.simple.coreapp.utils.AppException
 import com.simple.coreapp.utils.autoCleared
+import com.simple.coreapp.utils.ext.getSerializableOrNull
 import com.simple.coreapp.utils.extentions.beginTransitionAwait
 import com.simple.coreapp.utils.extentions.doOnHeightNavigationChange
 import com.simple.coreapp.utils.extentions.observeLaunch
@@ -39,6 +40,7 @@ import com.simple.navigation.utils.ext.setNavigationResultListener
 import com.simple.state.ResultState
 import com.simple.state.isStart
 import com.simple.state.isSuccess
+import com.simple.wallet.DATA
 import com.simple.wallet.DP_32
 import com.simple.wallet.PAYLOAD_PAIR
 import com.simple.wallet.PAYLOAD_SLIDE
@@ -47,6 +49,7 @@ import com.simple.wallet.databinding.LayoutActionConfirmBinding
 import com.simple.wallet.databinding.PopupListBinding
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.domain.entities.Request.Slide.Companion.toRequestSlide
+import com.simple.wallet.domain.entities.Wallet
 import com.simple.wallet.presentation.adapters.BottomAdapter
 import com.simple.wallet.presentation.adapters.ErrorAdapter
 import com.simple.wallet.presentation.adapters.HeaderAdapter
@@ -172,13 +175,9 @@ internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<Popup
 
         setNavigationResultListener(keyRequestPickWallet) { _, bundle ->
 
-//            val listWallet = walletViewModel.walletList.getOrEmpty()
-//
-//            val walletPick = bundle.getParcelableOrNull<Wallet>(SelectWalletPopup.PARAM_WALLET) ?: return@setNavigationResultListener
-//
-//            val wallet = listWallet.firstOrNull { it.id.equals(walletPick.id, true) } ?: return@setNavigationResultListener
-//
-//            viewModel.updateCurrentWallet(wallet)
+            val wallet = bundle.getSerializableOrNull<Wallet>(DATA) ?: return@setNavigationResultListener
+
+            viewModel.updateCurrentWallet(wallet)
         }
 
 
@@ -202,9 +201,9 @@ internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<Popup
 
         val bottomAdapter = BottomAdapter(onChainClicked = { _, _ ->
 
-            offerDeepLink("/select-wallet?${OptionFragment.KEY_REQUEST}=$keyRequestPickWallet&walletId=${viewModel.currentWallet.value?.id}&isSupportAllWallet=false")
         }, onWalletClicked = { _, _ ->
 
+            offerDeepLink("/select-wallet?${OptionFragment.KEY_REQUEST}=$keyRequestPickWallet&walletId=${viewModel.currentWallet.value?.id}&isSupportAllWallet=false")
         })
 
         val headerAdapter = HeaderAdapter()
@@ -234,7 +233,7 @@ internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<Popup
 
             bindingAction.root.postAwait()
 
-            if (state != ButtonState.REQUEST_DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350).setOrdering(ORDERING_TOGETHER)) {
+            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350).setOrdering(ORDERING_TOGETHER)) {
 
                 bindButtonState(state)
             } else {
@@ -297,7 +296,7 @@ internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<Popup
 
         bindingAction.tvPositive.isClickable = state in listOf(ButtonState.REVIEW)
         bindingAction.tvPositive.isVisible = when (state) {
-            in listOf(ButtonState.APPROVE_LOADING, ButtonState.REQUEST_DETECT_LOADING, ButtonState.REVIEW) -> true
+            in listOf(ButtonState.APPROVE_LOADING, ButtonState.DETECT_LOADING, ButtonState.REVIEW) -> true
             else -> false
         }
         bindingAction.tvPositive.alpha = when (state) {
@@ -309,17 +308,17 @@ internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<Popup
             ButtonState.WATCH_WALLET -> getString(R.string.action_not_support)
             else -> getString(R.string.action_confirm)
         }
-        bindingAction.progressPositive.setVisible(state in listOf(ButtonState.APPROVE_LOADING, ButtonState.REQUEST_DETECT_LOADING))
+        bindingAction.progressPositive.setVisible(state in listOf(ButtonState.APPROVE_LOADING, ButtonState.DETECT_LOADING))
 
 
-        bindingAction.tvNegative.isClickable = state in listOf(ButtonState.REQUEST_DETECT_FAILED, ButtonState.REVIEW)
+        bindingAction.tvNegative.isClickable = state in listOf(ButtonState.DETECT_FAILED, ButtonState.REVIEW)
         bindingAction.tvNegative.isVisible = when (state) {
-            in listOf(ButtonState.REQUEST_DETECT_FAILED, ButtonState.REJECT_LOADING, ButtonState.REQUEST_DETECT_LOADING, ButtonState.REVIEW) -> true
+            in listOf(ButtonState.DETECT_FAILED, ButtonState.REJECT_LOADING, ButtonState.DETECT_LOADING, ButtonState.REVIEW) -> true
 
             else -> false
         }
         bindingAction.tvNegative.text = when (state) {
-            ButtonState.REQUEST_DETECT_FAILED -> getString(R.string.action_cancel)
+            ButtonState.DETECT_FAILED -> getString(R.string.action_cancel)
             else -> getString(R.string.action_reject)
         }
         bindingAction.progressNegative.setVisible(state in listOf(ButtonState.REJECT_LOADING))

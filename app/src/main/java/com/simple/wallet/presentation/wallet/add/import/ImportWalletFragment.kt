@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
@@ -42,6 +43,7 @@ import com.simple.wallet.R
 import com.simple.wallet.databinding.FragmentImportWalletBinding
 import com.simple.wallet.domain.entities.scan.ScanData
 import com.simple.wallet.presentation.wallet.add.AddWalletViewModel
+import com.simple.wallet.utils.exts.takeIfNotBlank
 
 class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, ImportWalletViewModel>() {
 
@@ -150,7 +152,12 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
         setNavigationResultListener(REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET) { _, b ->
 
-            val result: ScanData = b.getSerializableOrNull(DATA) ?: return@setNavigationResultListener
+            Log.d("tuanha", "setupUI: ")
+            val result: ScanData = b.getSerializableOrNull<ScanData>(DATA)?.apply {
+
+            } ?: return@setNavigationResultListener
+
+            Log.d("tuanha", "setupUI: ${result.text}")
 
             binding.edtKey.setText(result.text)
         }
@@ -183,7 +190,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
             binding.tvContinue.isClickable = it.isSuccess()
         }
 
-        scanString?.let {
+        scanString?.takeIfNotBlank()?.let {
 
             val binding = binding ?: return@let
 

@@ -2,12 +2,10 @@ package com.simple.wallet.utils.exts
 
 import android.graphics.Typeface
 import android.text.style.StyleSpan
-import com.simple.adapter.ViewItemCloneable
 import com.simple.core.utils.extentions.asObject
 import com.simple.core.utils.extentions.asObjectOrNull
 import com.simple.coreapp.utils.extentions.emptyImage
 import com.simple.coreapp.utils.extentions.emptyText
-import com.simple.coreapp.utils.extentions.text.Text
 import com.simple.coreapp.utils.extentions.text.TextImage
 import com.simple.coreapp.utils.extentions.text.TextRes
 import com.simple.coreapp.utils.extentions.text.TextSpan
@@ -15,7 +13,6 @@ import com.simple.coreapp.utils.extentions.text.TextWithTextColorAttrColor
 import com.simple.coreapp.utils.extentions.toImage
 import com.simple.coreapp.utils.extentions.toPx
 import com.simple.coreapp.utils.extentions.toText
-import com.simple.coreapp.utils.extentions.withTextColor
 import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Message
 import com.simple.wallet.domain.entities.Request
@@ -23,7 +20,6 @@ import com.simple.wallet.domain.entities.Transaction
 import com.simple.wallet.domain.entities.extra.ApproveExtra
 import com.simple.wallet.domain.entities.extra.TransferExtra
 import com.simple.wallet.presentation.adapters.HeaderViewItem
-import com.simple.wallet.presentation.adapters.MessageViewItem
 import java.math.BigInteger
 
 fun Request.toConnectHeaderViewItem() = HeaderViewItem("").apply {
@@ -143,45 +139,5 @@ private fun updateHeaderViewItem(request: Request, headerViewItem: HeaderViewIte
 
             captionBackground = R.drawable.bg_corners_8dp_solid_warning_10
         }
-    }
-}
-
-
-fun Request?.toMessageViewItem(isConfirm: Boolean): List<ViewItemCloneable> = this.run {
-
-    if (this == null) {
-
-        return@run emptyList()
-    }
-
-
-    val list = arrayListOf<Text>()
-
-    if (power?.status in listOf(Request.Power.Status.RISK)) {
-
-        list.add(TextRes(R.string.message_warning_url_risk, TextImage(R.drawable.ic_check_box_normal_accent_24dp, 16.toPx())))
-    }
-
-    if (list.isNotEmpty()) return@run MessageViewItem(id = "KEY").apply {
-
-        list.add(0, TextSpan(R.string.message_warning.toText(), StyleSpan(Typeface.BOLD)))
-
-        message = list.toText("\n").withTextColor(com.google.android.material.R.attr.colorError)
-
-        messageIcon = if (isConfirm) {
-            R.drawable.ic_check_box_select_accent_24dp.toImage()
-        } else {
-            R.drawable.ic_check_box_normal_accent_24dp.toImage()
-        }
-
-        background = R.drawable.bg_corners_16dp_solid_error_10
-
-        needConfirm = true
-    }.let {
-
-        listOf(it)
-    } else {
-
-        return@run emptyList()
     }
 }

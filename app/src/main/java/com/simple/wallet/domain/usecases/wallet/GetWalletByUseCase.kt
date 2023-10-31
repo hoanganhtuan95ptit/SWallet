@@ -6,12 +6,14 @@ import com.simple.wallet.domain.repositories.WalletRepository
 
 class GetWalletByUseCase(
     private val walletRepository: WalletRepository
-) : BaseUseCase<GetWalletByUseCase.Param, Wallet> {
+) : BaseUseCase<GetWalletByUseCase.Param, List<Wallet>> {
 
-    override suspend fun execute(param: Param?): Wallet {
+    override suspend fun execute(param: Param?): List<Wallet> {
         checkNotNull(param)
 
-        return walletRepository.getWalletBy(param.walletAddress)
+        return walletRepository.getWalletBy(param.walletAddress).let {
+            listOf(it)
+        }
     }
 
     data class Param(val walletAddress: String)

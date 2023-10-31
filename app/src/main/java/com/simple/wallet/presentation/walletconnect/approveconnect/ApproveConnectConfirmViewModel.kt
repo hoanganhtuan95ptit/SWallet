@@ -24,7 +24,9 @@ import com.simple.coreapp.utils.extentions.orStateEmpty
 import com.simple.coreapp.utils.extentions.postDifferentValue
 import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
 import com.simple.coreapp.utils.extentions.postValue
+import com.simple.coreapp.utils.extentions.text.Text
 import com.simple.coreapp.utils.extentions.text.TextImage
+import com.simple.coreapp.utils.extentions.text.TextRes
 import com.simple.coreapp.utils.extentions.text.TextSpan
 import com.simple.coreapp.utils.extentions.text.TextWithTextColorAttrColor
 import com.simple.coreapp.utils.extentions.toImage
@@ -43,11 +45,11 @@ import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.domain.entities.Wallet
-import com.simple.wallet.domain.usecases.walletconnect.ApproveConnectUseCase
 import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
 import com.simple.wallet.domain.usecases.chain.GetChainSelectedUseCase
-import com.simple.wallet.domain.usecases.walletconnect.GetConnectInfoAsyncUseCase
 import com.simple.wallet.domain.usecases.wallet.GetWalletSelectedUseCase
+import com.simple.wallet.domain.usecases.walletconnect.ApproveConnectUseCase
+import com.simple.wallet.domain.usecases.walletconnect.GetConnectInfoAsyncUseCase
 import com.simple.wallet.domain.usecases.walletconnect.PairConnectUseCase
 import com.simple.wallet.domain.usecases.walletconnect.RejectConnectUseCase
 import com.simple.wallet.presentation.adapters.BottomViewItem
@@ -56,7 +58,6 @@ import com.simple.wallet.presentation.adapters.KeyValueViewItemV3
 import com.simple.wallet.presentation.adapters.MessageViewItem
 import com.simple.wallet.utils.exts.takeIfNotEmpty
 import com.simple.wallet.utils.exts.toConnectHeaderViewItem
-import com.simple.wallet.utils.exts.toMessageViewItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
@@ -274,14 +275,14 @@ internal class ApproveConnectConfirmViewModel(
 
         (if (requestDetectState.value?.isStart() == true) {
 
-            ButtonState.REQUEST_DETECT_LOADING
+            ButtonState.DETECT_LOADING
         } else if (requestDetectState.value?.isFailed() == true) {
 
-            ButtonState.REQUEST_DETECT_FAILED
-        } else /*if (currentWallet.get().isWatch) {
+            ButtonState.DETECT_FAILED
+        } else if (currentWallet.get().isWatch) {
 
             ButtonState.WATCH_WALLET
-        } else */ if (rejectConnectState.value?.isStart() == true) {
+        } else if (rejectConnectState.value?.isStart() == true) {
 
             ButtonState.REJECT_LOADING
         } else if (approveConnectState.value?.isStart() == true) {
@@ -302,28 +303,11 @@ internal class ApproveConnectConfirmViewModel(
         isConfirm.postValue(true)
     }
 
-    fun updateCurrentChain(chain: Chain): Boolean {
+    fun updateCurrentWallet(wallet: Wallet) {
 
-        if (this.currentChain.value?.id == chain.id) {
-            return false
+        this.currentWallet.postDifferentValue(wallet) { old, new ->
+            old?.id.equals(new.id, true)
         }
-
-        return this.currentChain.postDifferentValue(chain) { old, new ->
-            old?.id == new.id
-        }
-    }
-
-    fun updateCurrentWallet(wallet: Wallet): Boolean {
-
-//        if (this.currentWallet.value?.address.equals(wallet.address, true)) {
-//            return false
-//        }
-//
-//        return this.currentWallet.postDifferentValue(wallet) { old, new ->
-//            old?.address.equals(new.address, true)
-//        }
-
-        return false
     }
 
 
@@ -469,9 +453,48 @@ internal class ApproveConnectConfirmViewModel(
         null
     }
 
+    private fun Request?.toMessageViewItem(isConfirm: Boolean): List<ViewItemCloneable> {
+
+        if (this == null) {
+
+            return emptyList()
+        }
+
+
+        val list = arrayListOf<Text>()
+
+        if (power?.status in listOf(Request.Power.Status.RISK)) {
+
+            list.add(TextRes(R.string.message_warning_url_risk, TextImage(R.drawable.ic_check_box_normal_accent_24dp, 16.toPx())))
+        }
+
+        if (list.isNotEmpty()) MessageViewItem(id = "KEY").apply {
+
+            list.add(0, TextSpan(R.string.message_warning.toText(), StyleSpan(Typeface.BOLD)))
+
+            message = list.toText("\n").withTextColor(com.google.android.material.R.attr.colorError)
+
+            messageIcon = if (isConfirm) {
+                R.drawable.ic_check_box_select_accent_24dp.toImage()
+            } else {
+                R.drawable.ic_check_box_normal_accent_24dp.toImage()
+            }
+
+            background = R.drawable.bg_corners_16dp_solid_error_10
+
+            needConfirm = true
+        }.let {
+
+            return listOf(it)
+        } else {
+
+            return emptyList()
+        }
+    }
+
     enum class ButtonState {
 
-        REVIEW, WATCH_WALLET, REQUEST_DETECT_LOADING, REQUEST_DETECT_FAILED, REJECT_LOADING, APPROVE_LOADING, NONE
+        REVIEW, WATCH_WALLET, DETECT_LOADING, DETECT_FAILED, REJECT_LOADING, APPROVE_LOADING, NONE
     }
 
     enum class ErrorCode {

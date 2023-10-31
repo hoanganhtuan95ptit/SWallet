@@ -1,13 +1,11 @@
 package com.simple.wallet.presentation.adapters
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.simple.adapter.BaseBindingViewHolder
 import com.simple.adapter.ViewItemAdapter
 import com.simple.adapter.ViewItemCloneable
 import com.simple.core.utils.extentions.asObject
-import com.simple.core.utils.extentions.toJson
 import com.simple.coreapp.utils.extentions.emptyImage
 import com.simple.coreapp.utils.extentions.emptyText
 import com.simple.coreapp.utils.extentions.image.Image
@@ -127,7 +125,6 @@ class BottomViewItem(
 
     fun refresh(supportSelectWallet: Boolean = false) = apply {
 
-        Log.d("tuanha", "refresh: ${chain.type} ${wallet.addressMap.toJson()}")
         val address = wallet.addressMap.filterValues { it == chain.type }.toList().first().first
 
         walletName = wallet.name.toText()

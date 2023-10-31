@@ -8,11 +8,10 @@ private const val TABLE_NAME = "rpcs"
 @Dao
 interface RpcChainDao {
 
+    fun findListBy(chainId: Long, limit: Int): List<Chain.Rpc> = getRoomListBy(chainId, limit).toEntity()
 
-    fun getListByChainId(chainId: Long): List<Chain.Rpc> = getRoomListByChainId(chainId).toEntity()
-
-    @Query("SELECT * from $TABLE_NAME WHERE chainId = :chainId")
-    fun getRoomListByChainId(chainId: Long): List<RoomRpc>
+    @Query("SELECT * from $TABLE_NAME WHERE chainId = :chainId ORDER BY priority DESC LIMIT :limit")
+    fun getRoomListBy(chainId: Long, limit: Int): List<RoomRpc>
 
 
     fun insert(vararg entity: Chain.Rpc) = insertOrUpdate(entity.map { it.toRoom() })
@@ -25,7 +24,7 @@ interface RpcChainDao {
 
 @Entity(
     tableName = TABLE_NAME,
-    primaryKeys = ["chainId", "priority", "type"],
+    primaryKeys = ["chainId", "priority"],
 )
 data class RoomRpc(
     val chainId: Long,
@@ -33,8 +32,6 @@ data class RoomRpc(
 
     var url: String = "",
     var name: String = "",
-
-    var type: String = ""
 )
 
 private fun List<Chain.Rpc>.toRoom() = map {

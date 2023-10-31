@@ -1,331 +1,345 @@
-//package com.simple.wallet.presentation.transaction.send
-//
-//import android.graphics.Typeface
-//import android.text.style.StyleSpan
-//import android.util.Range
-//import androidx.annotation.VisibleForTesting
-//import androidx.lifecycle.LiveData
-//import androidx.lifecycle.MediatorLiveData
-//import androidx.lifecycle.viewModelScope
-//import com.simple.adapter.ViewItemCloneable
-//import com.simple.core.utils.extentions.asObjectOrNull
-//import com.simple.coreapp.ui.adapters.SpaceViewItem
-//import com.simple.coreapp.utils.extentions.combineSources
-//import com.simple.coreapp.utils.extentions.get
-//import com.simple.coreapp.utils.extentions.getOrEmpty
-//import com.simple.coreapp.utils.extentions.getOrNull
-//import com.simple.coreapp.utils.extentions.listenerSources
-//import com.simple.coreapp.utils.extentions.liveData
-//import com.simple.coreapp.utils.extentions.postDifferentValue
-//import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
-//import com.simple.coreapp.utils.extentions.postValue
-//import com.simple.coreapp.utils.extentions.text.TextSpan
-//import com.simple.coreapp.utils.extentions.toPx
-//import com.simple.coreapp.utils.extentions.toText
-//import com.simple.state.ResultState
-//import com.simple.state.doSuccess
-//import com.simple.state.isStart
-//import com.simple.state.toSuccess
-//import com.simple.wallet.R
-//import com.simple.wallet.domain.entities.Request
-//import com.simple.wallet.domain.entities.Transaction
-//import com.simple.wallet.domain.entities.extra.ApproveExtra
-//import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
-//import com.simple.wallet.domain.usecases.transaction.SendTransactionUseCase
-//import com.simple.wallet.presentation.adapters.HeaderViewItem
-//import com.simple.wallet.presentation.adapters.KeyValueViewItemV3
-//import com.simple.wallet.presentation.adapters.TokenApproveViewItem
-//import com.simple.wallet.utils.exts.FormatNumberType
-//import com.simple.wallet.utils.exts.divideToPowerTen
-//import com.simple.wallet.utils.exts.shortenValue
-//import com.simple.wallet.utils.exts.toBigDecimalOrDefaultZero
-//import com.simple.wallet.utils.exts.toDisplay
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.launch
-//import org.web3j.crypto.transaction.type.TransactionType
-//import java.math.BigInteger
-//
-//class SendTransactionConfirmViewModel(
-//    val mRequest: Request,
-//
-//    private val sendTransactionUseCase: SendTransactionUseCase,
-//    private val detectRequestAsyncUseCase: DetectRequestAsyncUseCase,
-//) : TransactionViewModel() {
-//
-//    @VisibleForTesting
-//    val isConfirm: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
-//
-//        value = false
-//    }
-//
-//    @VisibleForTesting
-//    val request: LiveData<Request> = liveData {
-//
-//        postValue(mRequest)
-//    }
-//
-//    @VisibleForTesting
-//    val requestDetectState: LiveData<ResultState<Request>> = combineSources(request) {
-//
-//        if (value == null) {
-//
-//            postValue(ResultState.Start)
-//        }
-//
-//        detectRequestAsyncUseCase.execute(DetectRequestAsyncUseCase.Param(request.get())).collect {
-//
-//            postValue(ResultState.Success(it))
-//        }
-//    }
-//
-//    @VisibleForTesting
-//    val requestDetect: LiveData<Request> = combineSources(requestDetectState) {
-//
-//        requestDetectState.get().doSuccess {
-//
-//            postValue(it)
-//        }
-//    }
-//
-//    val transaction: LiveData<Transaction> = combineSources(requestDetectState) {
-//
-//        requestDetectState.get().doSuccess {
-//
-//            postValue(it.transaction)
-//        }
-//    }
-//
-//
-//    @VisibleForTesting
-//    val headerViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(requestDetect) {
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-//        list.add(HeaderViewItem(requestDetect.get()).refresh())
-//
-//        postDifferentValueIfActive(list)
-//    }
-//
-//    @VisibleForTesting
-//    val transactionInfoViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(nativeToken, requestDetect) {
-//
-//        val nativeToken = nativeToken.get()
-//
-//        val transaction = requestDetect.get().transaction ?: return@combineSources
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-//        list.addAll(transaction.getTransactionInfo(nativeToken))
-//
-//        postDifferentValueIfActive(list)
-//    }
-//
-//    @VisibleForTesting
-//    val transactionFeeViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(gas, gasLimit, bonusFee, nativeToken, currentChain, currencyInfo) {
-//
-//        val gas = gas.get()
-//
-//        val gasLimit = gasLimit.get()
-//
-//        val nativeToken = nativeToken.get()
-//
-//        val currencyInfo = currencyInfo.get()
-//
-//        val currentChain = currentChain.get()
-//
-//        val transactionFee = bonusFee.get()
-//
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-////        list.add(FeeTransactionInfoViewItem().refresh(gas, gasLimit, nativeToken, currencyInfo, currentChain, transactionFee))
-//
-//        postDifferentValueIfActive(list)
-//    }
-//
-//    @VisibleForTesting
-//    val transactionMessageViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(gas, gasLimit, bonusFee, nativeToken, isConfirm, requestDetectState) {
-//
-//        val sessionMessageDetectState = requestDetectState.get()
-//
-//        val sessionMessage = sessionMessageDetectState.toSuccess()?.data
-//
-//
-//        val gasPrice = gas.get().gasPrice.toBigDecimalOrDefaultZero()
-//
-//        val gasLimit = gasLimitState.get().toSuccess()?.data?.let { Pair(gasLimit.get().toBigDecimal(), Range(it.second.lower.toBigDecimal(), it.second.upper.toBigDecimal())) }
-//
-//        val bonusFee = bonusFee.get()
-//
-//        val nativeToken = nativeToken.get()
-//
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-////        MessageInfoViewItem("").refresh(isConfirm.get(), sessionMessage, gasPrice, gasLimit, nativeToken, bonusFee)?.let { viewItem ->
-////
-////            list.add(viewItem)
-////        }
-//
-//        postDifferentValueIfActive(list)
-//    }
-//
-//    @VisibleForTesting
-//    val bottomViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(currentChain, currentWallet) {
-//
-//        val currentChain = currentChain.get()
-//
-//        val currentWallet = currentWallet.get()
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-////        list.add(BottomTransactionInfoViewItem(currentChain, currentWallet).refresh())
-//
-//        postDifferentValueIfActive(list)
-//    }
-//
-//    @VisibleForTesting
-//    val viewItemList: LiveData<List<ViewItemCloneable>> = combineSources(headerViewItemList, transactionInfoViewItemList, transactionFeeViewItemList, transactionMessageViewItemList, bottomViewItemList) {
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-//        list.addAll(headerViewItemList.getOrEmpty())
-//
-//        list.addAll(transactionInfoViewItemList.getOrEmpty())
-//
-//        transactionFeeViewItemList.getOrEmpty().takeIf { it.isNotEmpty() }?.let {
-//
-//            list.add(SpaceViewItem(height = 20.toPx()))
-//            list.addAll(it)
-//        }
-//
-//        transactionMessageViewItemList.getOrEmpty().takeIf { it.isNotEmpty() }?.let {
-//
-//            list.add(SpaceViewItem(height = 20.toPx()))
-//            list.addAll(it)
-//        }
-//
-//        bottomViewItemList.getOrEmpty().takeIf { it.isNotEmpty() }?.let {
-//
-//            list.add(SpaceViewItem(height = 20.toPx()))
-//            list.addAll(it)
-//        }
-//
-//        postDifferentValueIfActive(list)
-//    }.apply {
-//
-//
-//    }
-//
-//    internal val viewItemListDisplay: LiveData<List<ViewItemCloneable>> = combineSources(viewItemList) {
-//
-//        postDifferentValueIfActive(viewItemList.getOrEmpty())
-//    }
-//
-//
-//    internal val sendTransactionState: LiveData<ResultState<String>> = MediatorLiveData()
-//
-//
-//    internal val buttonState: LiveData<ResultState<ButtonState>> = listenerSources(currentWallet, gasLimitState) {
-//
-//        val state = listOf(gasLimitState.getOrNull())
-//
-//        if (state.any { it?.isStart() == true }) {
-//
-//            postValue(ResultState.Start)
-//        } else if (currentWallet.get().isWatch) {
-//
-//            postValue(ResultState.Success(ButtonState.WATCH_WALLET))
-//        } else {
-//
-//            postValue(ResultState.Success(ButtonState.REVIEW_TRANSACTION))
-//        }
-//    }
-//
-//
-//    fun updateConfirm() {
-//
-//        isConfirm.postValue(true)
-//    }
-//
-//    fun sendTransaction() = viewModelScope.launch(handler + Dispatchers.IO) {
-//
-//        val messageViewItemList = transactionMessageViewItemList.getOrEmpty().filterIsInstance<MessageInfoViewItem>()
-//
-//        if (messageViewItemList.isNotEmpty() && messageViewItemList.any { it.showConfirm } && isConfirm.value == false) {
-//
-//            sendTransactionState.postValue(ResultState.Failed("", AppExceptionV2(code = TransactionCode.PLEASE_CONFIRM)))
-//
-//            return@launch
-//        }
-//
-//
-//        kotlin.runCatching {
-//
-//            sendTransactionState.postDifferentValue(ResultState.Start)
-//
-//            sendTransactionState.postDifferentValue(sendTransactionSingle())
-//        }.getOrElse {
-//
-//            sendTransactionState.postDifferentValue(ResultState.Failed(it.message ?: "error", it))
-//        }
-//    }
-//
-//    private suspend fun sendTransactionSingle(): ResultState<String> {
-//
-//        val gas = gas.get()
-//
-//        val currentChain = currentChain.get()
-//
-//        val transaction = transaction.get()
-//
-//        val value = transaction.value
-//
-//        val gasLimit = gasLimit.get()
-//
-//        val gasPrice = gas.gasPrice
-//
-//        val priorityFee = gas.priorityFee
-//
-//
-//        return SendTransactionUseCase.Param(
-//
-//            to = transaction.to,
-//            from = currentWallet.get().address,
-//
-//            data = transaction.data,
-//
-//            value = value,
-//
-//            nonce = customNonce.value?.toInt() ?: -1,
-//            gasLimit = gasLimit,
-//            gasPrice = gasPrice.toBigDecimalOrDefaultZero(),
-//            priorityFee = priorityFee.toBigDecimalOrDefaultZero(),
-//
-//            isFromDApp = true,
-//
-//            chainId = currentChain.id,
-//            rpcUrls = currentChain.rpcList,
-//        ).let {
-//
-//            sendTransactionUseCase.execute(it)
-//        }
-//    }
-//
-//    private fun Transaction.getTransactionInfo(nativeToken: Token): List<ViewItemCloneable> {
-//
-//        val list = arrayListOf<ViewItemCloneable>()
-//
-//        if (type == TransactionType.SEND) {
-//
-//            val extra = this.extra.asObjectOrNull<TransferTransactionExtra>()!!
+package com.simple.wallet.presentation.transaction.send
+
+import android.graphics.Typeface
+import android.text.style.StyleSpan
+import android.util.Range
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.viewModelScope
+import com.one.web3.utils.fromWei
+import com.one.web3.utils.toWei
+import com.simple.adapter.ViewItemCloneable
+import com.simple.coreapp.ui.adapters.SpaceViewItem
+import com.simple.coreapp.utils.AppException
+import com.simple.coreapp.utils.extentions.combineSources
+import com.simple.coreapp.utils.extentions.get
+import com.simple.coreapp.utils.extentions.getOrEmpty
+import com.simple.coreapp.utils.extentions.listenerSources
+import com.simple.coreapp.utils.extentions.liveData
+import com.simple.coreapp.utils.extentions.orListEmpty
+import com.simple.coreapp.utils.extentions.postDifferentValue
+import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
+import com.simple.coreapp.utils.extentions.postValue
+import com.simple.coreapp.utils.extentions.text.Text
+import com.simple.coreapp.utils.extentions.text.TextImage
+import com.simple.coreapp.utils.extentions.text.TextRes
+import com.simple.coreapp.utils.extentions.text.TextSpan
+import com.simple.coreapp.utils.extentions.toImage
+import com.simple.coreapp.utils.extentions.toPx
+import com.simple.coreapp.utils.extentions.toText
+import com.simple.coreapp.utils.extentions.withStyle
+import com.simple.state.ResultState
+import com.simple.state.doSuccess
+import com.simple.state.isFailed
+import com.simple.state.isStart
+import com.simple.state.toSuccess
+import com.simple.wallet.DP_20
+import com.simple.wallet.R
+import com.simple.wallet.domain.entities.Chain
+import com.simple.wallet.domain.entities.Request
+import com.simple.wallet.domain.entities.Token
+import com.simple.wallet.domain.entities.Transaction
+import com.simple.wallet.domain.entities.Wallet
+import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
+import com.simple.wallet.domain.usecases.chain.GetChainByUseCase
+import com.simple.wallet.domain.usecases.token.GetTokenByUseCase
+import com.simple.wallet.domain.usecases.transaction.SendTransactionUseCase
+import com.simple.wallet.domain.usecases.wallet.GetWalletByUseCase
+import com.simple.wallet.presentation.adapters.BottomViewItem
+import com.simple.wallet.presentation.adapters.KeyValueViewItemV3
+import com.simple.wallet.presentation.adapters.MessageViewItem
+import com.simple.wallet.presentation.transaction.send.adapter.FeeTransactionInfoViewItem
+import com.simple.wallet.utils.exts.FormatNumberType
+import com.simple.wallet.utils.exts.divideToPowerTen
+import com.simple.wallet.utils.exts.shortenValue
+import com.simple.wallet.utils.exts.takeIfNotEmpty
+import com.simple.wallet.utils.exts.toBigDecimalOrDefaultZero
+import com.simple.wallet.utils.exts.toDisplay
+import com.simple.wallet.utils.exts.toTransactionHeaderViewItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.web3j.utils.Convert
+import java.math.BigDecimal
+import java.math.BigInteger
+
+class SendTransactionConfirmViewModel(
+    val mRequest: Request,
+
+    private val getTokenByUseCase: GetTokenByUseCase,
+    private val getChainByUseCase: GetChainByUseCase,
+    private val getWalletByUseCase: GetWalletByUseCase,
+
+    private val sendTransactionUseCase: SendTransactionUseCase,
+    private val detectRequestAsyncUseCase: DetectRequestAsyncUseCase,
+) : TransactionViewModel() {
+
+    override val currentChain: LiveData<Chain> = liveData {
+
+        getChainByUseCase.execute(GetChainByUseCase.Param(mRequest.chainId!!)).firstOrNull()?.let {
+
+            postValue(it)
+        }
+    }
+
+    override var currentWallet: LiveData<Wallet> = liveData {
+
+        getWalletByUseCase.execute(GetWalletByUseCase.Param(mRequest.walletAddress ?: return@liveData)).firstOrNull()?.let {
+
+            postValue(it)
+        }
+    }
+
+    override val nativeToken: LiveData<Token> = combineSources(currentChain) {
+
+        getTokenByUseCase.execute(GetTokenByUseCase.Param(chainId = listOf(mRequest.chainId!!), tokenType = listOf(Token.Type.NATIVE))).firstOrNull()?.let {
+
+            postValue(it)
+        }
+    }
+
+    @VisibleForTesting
+    val isConfirm: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
+
+        value = false
+    }
+
+    @VisibleForTesting
+    val request: LiveData<Request> = liveData {
+
+        postValue(mRequest)
+    }
+
+    @VisibleForTesting
+    val requestDetectState: LiveData<ResultState<Request>> = combineSources(request) {
+
+        if (value == null) {
+
+            postValue(ResultState.Start)
+        }
+
+        detectRequestAsyncUseCase.execute(DetectRequestAsyncUseCase.Param(request.get())).collect {
+
+            postValue(ResultState.Success(it))
+        }
+    }
+
+    @VisibleForTesting
+    val requestDetect: LiveData<Request> = combineSources(requestDetectState) {
+
+        requestDetectState.get().doSuccess {
+
+            postValue(it)
+        }
+    }
+
+    override val transaction: LiveData<Transaction> = combineSources(requestDetectState) {
+
+        requestDetectState.get().doSuccess {
+
+            postValue(it.transaction)
+        }
+    }
+
+
+    @VisibleForTesting
+    val headerViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(requestDetect) {
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        list.add(requestDetect.get().toTransactionHeaderViewItem())
+
+        postDifferentValueIfActive(list)
+    }
+
+    @VisibleForTesting
+    val transactionInfoViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(nativeToken, requestDetect) {
+
+        val nativeToken = nativeToken.get()
+
+        val transaction = requestDetect.get().transaction ?: return@combineSources
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        list.addAll(transaction.getTransactionInfo(nativeToken))
+
+        postDifferentValueIfActive(list)
+    }
+
+    @VisibleForTesting
+    val transactionFeeViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(gas, gasLimit, bonusFee, nativeToken, currentChain) {
+
+        val gas = gas.get()
+
+        val bonusFee = bonusFee.get()
+
+        val gasLimit = gasLimit.get()
+
+        val nativeToken = nativeToken.get()
+
+        val currentChain = currentChain.get()
+
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        list.add(FeeTransactionInfoViewItem().refresh(gas, gasLimit, nativeToken, currentChain, bonusFee))
+
+        postDifferentValueIfActive(list)
+    }
+
+    @VisibleForTesting
+    val messageViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(gas, gasLimit, bonusFee, nativeToken, isConfirm, requestDetectState) {
+
+        val requestDetectState = requestDetectState.get()
+
+        val request = requestDetectState.toSuccess()?.data
+
+
+        val gasPrice = gas.get().gasPrice.toBigDecimalOrDefaultZero()
+
+        val gasLimit = gasLimitState.get().toSuccess()?.data?.let { Pair(gasLimit.get().toBigDecimal(), Range(it.second.lower.toBigDecimal(), it.second.upper.toBigDecimal())) }
+
+        val bonusFee = bonusFee.get()
+
+        val nativeToken = nativeToken.get()
+
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        list.addAll(request.toMessageViewItem(isConfirm.get(), gasPrice, gasLimit, nativeToken, bonusFee))
+
+        postDifferentValueIfActive(list)
+    }
+
+    @VisibleForTesting
+    val bottomViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(currentChain, currentWallet) {
+
+        val currentChain = currentChain.get()
+
+        val currentWallet = currentWallet.get()
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        list.add(BottomViewItem(currentChain, currentWallet).refresh())
+
+        postDifferentValueIfActive(list)
+    }
+
+    @VisibleForTesting
+    val viewItemList: LiveData<List<ViewItemCloneable>> = combineSources(headerViewItemList, transactionInfoViewItemList, transactionFeeViewItemList.orListEmpty(), messageViewItemList.orListEmpty(), bottomViewItemList) {
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        list.addAll(headerViewItemList.getOrEmpty())
+
+        transactionInfoViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
+
+            list.add(SpaceViewItem(height = DP_20))
+            list.addAll(it)
+        }
+
+        transactionFeeViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
+
+            list.add(SpaceViewItem(height = DP_20))
+            list.addAll(it)
+        }
+
+        messageViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
+
+            list.add(SpaceViewItem(height = DP_20))
+            list.addAll(it)
+        }
+
+        bottomViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
+
+            list.add(SpaceViewItem(height = DP_20))
+            list.addAll(it)
+        }
+
+        postDifferentValueIfActive(list)
+    }
+
+
+    internal val viewItemListDisplay: LiveData<List<ViewItemCloneable>> = combineSources(viewItemList) {
+
+        postDifferentValueIfActive(viewItemList.getOrEmpty())
+    }
+
+
+    internal val sendTransactionState: LiveData<ResultState<String>> = MediatorLiveData()
+
+
+    internal val buttonState: LiveData<Enum<*>> = listenerSources(currentWallet, gasListState, gasLimitState, bonusFeeState, requestDetectState, sendTransactionState) {
+
+        (if (gasListState.value.isStart() || gasLimitState.value.isStart() || bonusFeeState.value.isStart() || requestDetectState.value.isStart()) {
+
+            ButtonState.DETECT_LOADING
+        } else if (gasListState.value.isFailed() || gasLimitState.value.isFailed() || bonusFeeState.value.isFailed() || requestDetectState.value.isFailed()) {
+
+            ButtonState.DETECT_FAILED
+        } else if (currentWallet.value?.isWatch == true) {
+
+            ButtonState.WATCH_WALLET
+        } else if (sendTransactionState.value.isStart()) {
+
+            ButtonState.APPROVAL_LOADING
+        } else {
+
+            ButtonState.REVIEW
+        }).let {
+
+            postDifferentValue(it)
+        }
+    }
+
+    fun updateConfirm() {
+
+        isConfirm.postValue(true)
+    }
+
+    fun sendTransaction() = viewModelScope.launch(handler + Dispatchers.IO) {
+
+        val messageViewItemList = messageViewItemList.getOrEmpty().filterIsInstance<MessageViewItem>()
+
+        if (messageViewItemList.isNotEmpty() && messageViewItemList.any { it.needConfirm } && isConfirm.value == false) {
+
+            sendTransactionState.postValue(ResultState.Failed(AppException(code = TransactionCode.PLEASE_CONFIRM)))
+
+            return@launch
+        }
+
+
+        kotlin.runCatching {
+
+            val gas = gas.get()
+
+            val transaction = transaction.get()
+
+            transaction.nonce = customNonce.value ?: -BigInteger.ONE
+            transaction.gasLimit = gasLimit.get()
+            transaction.gasPrice = gas.gasPrice.toBigDecimal()
+            transaction.priorityFee = gas.priorityFee.toBigDecimal()
+
+            sendTransactionState.postDifferentValue(ResultState.Start)
+
+            sendTransactionState.postDifferentValue(sendTransactionUseCase.execute(SendTransactionUseCase.Param(transaction)))
+        }.getOrElse {
+
+            sendTransactionState.postDifferentValue(ResultState.Failed(it))
+        }
+    }
+
+    private fun Transaction.getTransactionInfo(nativeToken: Token): List<ViewItemCloneable> {
+
+        val list = arrayListOf<ViewItemCloneable>()
+
+        if (type == Transaction.Type.SEND) {
+
+//            val extra = this.extra.asObjectOrNull<Transferxtra>()!!
 //
 //            val keyReceiver = R.string.title_receiver.toText()
 //
-//            val valueReceiver = extra.receiverAddress.shortenValue().toText().let {
-//
-//                TextSpan(it, StyleSpan(Typeface.BOLD))
-//            }
+//            val valueReceiver = extra.receiverAddress.shortenValue().toText().withStyle(Typeface.BOLD)
 //
 //            list.add(KeyValueViewItemV3("RECEIVER", key = keyReceiver, value = valueReceiver).refresh())
 //
@@ -341,8 +355,8 @@
 //            }
 //
 //            list.add(KeyValueViewItemV3("VALUE", key = keyValue, value = valueValue).refresh())
-//        } else if (type == TransactionType.APPROVAL) {
-//
+        } else if (type == Transaction.Type.APPROVAL) {
+
 //            val extra = this.extra.asObjectOrNull<ApproveExtra>()!!
 //
 //            val keyReceiver = R.string.title_sender.toText()
@@ -356,51 +370,107 @@
 //
 //
 //            if (extra.amountApprove > BigInteger.ZERO) list.add(TokenApproveViewItem(extra).refresh())
-//        } else {
-//
-//            val keySender = R.string.title_sender.toText()
-//
-//            val valueSender = to.shortenValue().toText().let {
-//
-//                TextSpan(it, StyleSpan(Typeface.BOLD))
-//            }
-//
-//            list.add(KeyValueViewItemV3("SENDER", key = keySender, value = valueSender).refresh())
-//
-//
-//            val keyValue = R.string.title_value.toText()
-//
-//            val valueValue = listOf(
-//                ("-" + value.toBigDecimal().divideToPowerTen(nativeToken.decimals).toDisplay(FormatNumberType.BALANCE)).toText(),
-//                nativeToken.symbol.uppercase().toText()
-//            ).toText(" ").let {
-//
-//                TextSpan(it, StyleSpan(Typeface.BOLD))
-//            }
-//
-//            list.add(KeyValueViewItemV3("VALUE", key = keyValue, value = valueValue).refresh())
-//
-//
-//            val keyData = R.string.title_data.toText()
-//
-//            val valueData = data.toText().let {
-//
-//                TextSpan(it, StyleSpan(Typeface.BOLD))
-//            }
-//
-//            list.add(KeyValueViewItemV3("DATA", key = keyData, value = valueData).refresh())
-//        }
-//
-//        return list
-//    }
-//}
-//
-//internal enum class ButtonState {
-//
-//    REVIEW_TRANSACTION, WATCH_WALLET, UNKNOWN
-//}
-//
-//internal enum class TransactionCode {
-//
-//    PLEASE_CONFIRM
-//}
+        } else {
+
+            val keySender = R.string.title_sender.toText()
+
+            val valueSender = to.shortenValue().toText().let {
+
+                TextSpan(it, StyleSpan(Typeface.BOLD))
+            }
+
+            list.add(KeyValueViewItemV3("SENDER", key = keySender, value = valueSender).refresh())
+
+
+            val keyValue = R.string.title_value.toText()
+
+            val valueValue = listOf(
+                listOf("-".toText(), value.toBigDecimal().divideToPowerTen(nativeToken.decimals).toDisplay(FormatNumberType.BALANCE)).toText(" "),
+                nativeToken.symbol.uppercase().toText()
+            ).toText(" ").withStyle(Typeface.BOLD)
+
+            list.add(KeyValueViewItemV3("VALUE", key = keyValue, value = valueValue).refresh())
+
+
+            val keyData = R.string.title_data.toText()
+
+            val valueData = data.toText().withStyle(Typeface.BOLD)
+
+            list.add(KeyValueViewItemV3("DATA", key = keyData, value = valueData).refresh())
+        }
+
+        return list
+    }
+
+    private fun Request?.toMessageViewItem(isConfirm: Boolean, gasPrice: BigDecimal? = null, gasLimit: Pair<BigDecimal, Range<BigDecimal>>? = null, native: Token? = null, bonusFee: BigDecimal? = null): List<ViewItemCloneable> {
+
+
+        if (this == null) {
+
+            return emptyList()
+        }
+
+
+        val list = arrayListOf<Text>()
+
+        if (bonusFee != null && gasPrice != null && gasLimit != null && native != null && gasLimit.first !in gasLimit.second) {
+
+            val from = StringBuilder()
+                .append(
+                    gasPrice.multiply(gasLimit.second.lower).toWei()
+                        .plus(bonusFee)
+                        .fromWei(Convert.Unit.ETHER).toDisplay(FormatNumberType.GAS_FEE)
+                )
+                .append(" " + native.symbol).toString()
+
+
+            val to = StringBuilder()
+                .append(
+                    gasPrice.multiply(gasLimit.second.upper).toWei()
+                        .plus(bonusFee)
+                        .fromWei(Convert.Unit.ETHER)
+                )
+                .append(" " + native.symbol).toString()
+
+            list.add(TextRes(R.string.message_warning_out_gas, from.toText(), to.toText()))
+        }
+
+        if (power?.status in listOf(Request.Power.Status.RISK)) {
+
+            list.add(TextRes(R.string.message_warning_url_risk, TextImage(R.drawable.ic_check_box_normal_accent_24dp, 16.toPx())))
+        }
+
+        if (list.isNotEmpty()) MessageViewItem().apply {
+
+            list.add(0, TextSpan(R.string.message_warning.toText(), StyleSpan(Typeface.BOLD)))
+
+            message = list.toText("\n")
+
+            messageIcon = if (isConfirm) {
+                R.drawable.ic_check_box_select_accent_24dp.toImage()
+            } else {
+                R.drawable.ic_check_box_normal_accent_24dp.toImage()
+            }
+
+            background = R.drawable.bg_corners_16dp_solid_error_10
+
+            needConfirm = true
+        }.let {
+
+            return listOf(it)
+        } else {
+
+            return emptyList()
+        }
+    }
+
+    internal enum class ButtonState {
+
+        REVIEW, WATCH_WALLET, DETECT_LOADING, DETECT_FAILED, APPROVAL_LOADING
+    }
+
+    internal enum class TransactionCode {
+
+        PLEASE_CONFIRM
+    }
+}

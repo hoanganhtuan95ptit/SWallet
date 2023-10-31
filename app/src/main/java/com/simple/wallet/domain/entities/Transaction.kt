@@ -1,17 +1,16 @@
 package com.simple.wallet.domain.entities
 
-import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.BigInteger
 
 data class Transaction(
     val txHash: String,
 
-    val to: String, val from: String,
+    var to: String, var from: String,
 
-    val data: String, val value: BigInteger,
+    var data: String, var value: BigInteger,
 
-    val nonce: Int, val gasPrice: BigDecimal, val gasLimit: BigInteger, val priorityFee: BigDecimal
+    var nonce: BigInteger, var gasPrice: BigDecimal, var gasLimit: BigInteger, var priorityFee: BigDecimal
 ) : Entity {
 
     var time: Long = 0

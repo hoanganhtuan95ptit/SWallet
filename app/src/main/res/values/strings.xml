@@ -92,9 +92,24 @@
 
     <string name="message_wallet_connect_time">%s at %s</string>
 
+    <string name="title_value">Value</string>
     <string name="time_today">Today</string>
     <string name="time_one_day_ago">Yesterday</string>
     <string name="action_reject">Reject</string>
     <string name="message_want_to_connect">%s want to connect</string>
     <string name="title_message">Message</string>
+
+    <string name="gas_fast_title">Fast</string>
+    <string name="gas_slow_title">Slow</string>
+    <string name="gas_custom_title">Custom</string>
+    <string name="gas_standard_title">Standard</string>
+    <string name="gas_super_fast_title">Super fast</string>
+    <string name="max_gas_detail" formatted="false">%s · %s</string>
+
+    <string name="formula_gas_limit">(Gas Limit)</string>
+    <string name="formula_gas_price">(Gas Price)</string>
+    <string name="formula_max_gas">(Max Gas)</string>
+    <string name="gas_formula" translatable="false" formatted="false">%s %s * %s %s</string>
+    <string name="transaction_estimate_formula" translatable="false">≈ %s\n</string>
+
 </resources>

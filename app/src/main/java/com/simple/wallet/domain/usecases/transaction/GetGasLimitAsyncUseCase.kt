@@ -3,6 +3,7 @@ package com.simple.wallet.domain.usecases.transaction
 import com.simple.coreapp.data.usecase.BaseUseCase
 import com.simple.coreapp.utils.extentions.offerActive
 import com.simple.state.ResultState
+import com.simple.state.toFailed
 import com.simple.wallet.GAS_LIMIT_DEFAULT
 import com.simple.wallet.domain.entities.Transaction
 import com.simple.wallet.domain.repositories.ChainRepository
@@ -29,8 +30,11 @@ class GetGasLimitAsyncUseCase(
 
             kotlin.runCatching {
 
-                val gasLimit = transactionRepository.getGasLimit(param.transaction, rpcUrls = rpcUrls, false)
+                val gasLimitState = transactionRepository.getGasLimit(param.transaction, rpcUrls = rpcUrls, false)
 
+                if (gasLimitState !is ResultState.Success) error(gasLimitState.toFailed()?.cause?.message ?: "")
+
+                val gasLimit = gasLimitState.data
 //                val gasLimitCommon =
 //                    gasLimitCallTaskList.execute(GasLimitTransferParam(tokenAmount = BigInteger.ONE, isNativeToken = true, walletAddress = param.transaction.from, receiverAddress = param.transaction.from, chainId = chainId, rpcUrls = rpcUrls))
 

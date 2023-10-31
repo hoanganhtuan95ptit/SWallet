@@ -13,9 +13,7 @@ fun JsonNode?.getString() = if (this is TextNode) {
 
 fun JsonNode?.getStringOrNull(key: String): String? {
 
-    val jsonNode = this?.get(key)
-
-    return getString()
+    return  this?.get(key)?.getString()
 }
 
 fun JsonNode?.getStringOrDefault(key: String, default: String = ""): String = getStringOrNull(key) ?: default

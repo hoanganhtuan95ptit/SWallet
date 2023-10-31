@@ -17,6 +17,9 @@ data class Chain(
     var config: Map<Config, String>? = null
 ) : Entity {
 
+    val isEIP1559: Boolean
+        get() = config?.get(Config.EIP_1559).toBoolean()
+
 
     enum class Type(val value: String) {
 
@@ -24,9 +27,8 @@ data class Chain(
         SOL("SOL");
     }
 
-    enum class Config(val data: String) {
-
-
+    enum class Config(val value: String) {
+        EIP_1559("EIP_1559")
     }
 
     data class Rpc(

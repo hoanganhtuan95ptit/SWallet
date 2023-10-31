@@ -6,6 +6,7 @@ import com.simple.wallet.presentation.camera.CameraViewModel
 import com.simple.wallet.presentation.chain.SelectChainViewModel
 import com.simple.wallet.presentation.home.HomeViewModel
 import com.simple.wallet.presentation.message.sign.SignMessageConfirmViewModel
+import com.simple.wallet.presentation.transaction.send.SendTransactionConfirmViewModel
 import com.simple.wallet.presentation.wallet.add.AddWalletViewModel
 import com.simple.wallet.presentation.wallet.add.create.CreateWalletViewModel
 import com.simple.wallet.presentation.wallet.add.import.ImportWalletViewModel
@@ -63,5 +64,10 @@ val viewModelModule = module {
     viewModel { (request: Request) ->
 
         SignMessageConfirmViewModel(request, get(), get(), get(), get())
+    }
+
+    viewModel { (request: Request) ->
+
+        SendTransactionConfirmViewModel(request, get(), get(), get(), get(), get())
     }
 }

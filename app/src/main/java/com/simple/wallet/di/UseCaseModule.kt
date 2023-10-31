@@ -8,6 +8,10 @@ import com.simple.wallet.domain.usecases.chain.GetAllChainUseCase
 import com.simple.wallet.domain.usecases.chain.GetChainByUseCase
 import com.simple.wallet.domain.usecases.chain.GetChainSelectedUseCase
 import com.simple.wallet.domain.usecases.message.SignMessageUseCase
+import com.simple.wallet.domain.usecases.token.GetTokenByUseCase
+import com.simple.wallet.domain.usecases.transaction.GetGasAsyncUseCase
+import com.simple.wallet.domain.usecases.transaction.GetGasLimitAsyncUseCase
+import com.simple.wallet.domain.usecases.transaction.SendTransactionUseCase
 import com.simple.wallet.domain.usecases.wallet.CreateWalletUseCase
 import com.simple.wallet.domain.usecases.wallet.GetAllWalletUseCase
 import com.simple.wallet.domain.usecases.wallet.GetWalletByUseCase
@@ -66,9 +70,19 @@ val useCaseModule = module {
 
     single { GetWalletSelectedUseCase(get()) }
 
+
     single { SignMessageUseCase(get()) }
+
+    single { SendTransactionUseCase(get(), get()) }
+
 
     single { GetChainByUseCase(get()) }
 
+    single { GetTokenByUseCase(get()) }
+
     single { GetWalletByUseCase(get()) }
+
+    single { GetGasAsyncUseCase(get(), get()) }
+
+    single { GetGasLimitAsyncUseCase(get(), get()) }
 }

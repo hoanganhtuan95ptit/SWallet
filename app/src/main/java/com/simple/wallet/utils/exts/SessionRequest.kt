@@ -12,6 +12,7 @@ import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.domain.entities.Request.Method.Companion.toSessionMethod
 import com.simple.wallet.domain.entities.Transaction
 import com.walletconnect.web3.wallet.client.Wallet
+import java.math.BigInteger
 
 
 fun Wallet.Model.SessionRequest.toSessionRequest() = Request(
@@ -19,7 +20,7 @@ fun Wallet.Model.SessionRequest.toSessionRequest() = Request(
     method = this.request.method.toSessionMethod(),
 ).apply {
 
-    val chainId = this@toSessionRequest.chainId?.split(":")?.lastOrNull()?.toLong() ?: Chain.ALL_NETWORK
+    val _chainId = this@toSessionRequest.chainId?.split(":")?.lastOrNull()?.toLong() ?: Chain.ALL_NETWORK
 
     val paramList = this@toSessionRequest.request.params.toListOrEmpty<JsonNode>()
 
@@ -31,14 +32,16 @@ fun Wallet.Model.SessionRequest.toSessionRequest() = Request(
         logo = this@toSessionRequest.peerMetaData!!.icons[0]
     )
 
-    message = paramList.getMessageOrNull(chainId, method)?.let {
+    message = paramList.getMessageOrNull(_chainId, method)?.let {
 
-        Message(it, chainId, this@toSessionRequest.request.method.toMessageType())
+        Message(it, _chainId, this@toSessionRequest.request.method.toMessageType())
     }
 
-    transaction = paramList.getTransactionOrNull(chainId, method)
+    chainId = _chainId
 
-    walletAddress = paramList.getWalletAddressOrNull(chainId, method)
+    transaction = paramList.getTransactionOrNull(_chainId, method)
+
+    walletAddress = paramList.getWalletAddressOrNull(_chainId, method)
 }
 
 private fun List<JsonNode>.getMessageOrNull(chainId: Long, method: Enum<*>) = takeIf {
@@ -73,7 +76,7 @@ private fun List<JsonNode>.getTransactionOrNull(chainId: Long, method: Enum<*>) 
         data = this.getStringOrNull("raw") ?: this.getStringOrNull("data") ?: "",
         value = this.getString("value").hexToBigIntegerOrZero(),
 
-        nonce = 0,
+        nonce = BigInteger.ZERO,
         gasPrice = this.getString("maxFeePerGas").hexToBigDecimalOrZero(),
         gasLimit = this.getString("gasLimit").hexToBigIntegerOrZero(),
         priorityFee = this.getString("maxPriorityFeePerGas").hexToBigDecimalOrZero()

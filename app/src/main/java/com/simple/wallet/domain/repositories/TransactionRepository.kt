@@ -1,12 +1,16 @@
 package com.simple.wallet.domain.repositories
 
+import com.simple.state.ResultState
+import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Gas
 import com.simple.wallet.domain.entities.Transaction
 import java.math.BigInteger
 
 interface TransactionRepository {
 
-    fun getGasList(chainId: Long, rpcUrls: List<String>, sync: Boolean): List<Gas>
+    suspend fun getGasList(chainId: Long, rpcUrls: List<String>, sync: Boolean): ResultState<List<Gas>>
 
-    fun getGasLimit(transaction: Transaction, rpcUrls: List<String>, sync: Boolean): BigInteger
+    suspend fun getGasLimit(transaction: Transaction, rpcUrls: List<String>, sync: Boolean): ResultState<BigInteger>
+
+    suspend fun sendTransaction(transaction: Transaction, chain: Chain, rpcUrls: List<String>): ResultState<String>
 }

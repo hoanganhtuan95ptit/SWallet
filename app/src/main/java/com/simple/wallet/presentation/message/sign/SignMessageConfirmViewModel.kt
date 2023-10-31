@@ -22,11 +22,18 @@ import com.simple.coreapp.utils.extentions.liveData
 import com.simple.coreapp.utils.extentions.postDifferentValue
 import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
 import com.simple.coreapp.utils.extentions.postValue
+import com.simple.coreapp.utils.extentions.text.Text
+import com.simple.coreapp.utils.extentions.text.TextImage
+import com.simple.coreapp.utils.extentions.text.TextRes
 import com.simple.coreapp.utils.extentions.text.TextSpan
+import com.simple.coreapp.utils.extentions.toImage
+import com.simple.coreapp.utils.extentions.toPx
 import com.simple.coreapp.utils.extentions.toText
 import com.simple.coreapp.utils.extentions.withTextColor
 import com.simple.state.ResultState
 import com.simple.state.doSuccess
+import com.simple.state.isFailed
+import com.simple.state.isStart
 import com.simple.state.toSuccess
 import com.simple.wallet.DP_20
 import com.simple.wallet.R
@@ -47,7 +54,6 @@ import com.simple.wallet.presentation.adapters.TextCaptionViewItem
 import com.simple.wallet.presentation.adapters.TokenApproveViewItem
 import com.simple.wallet.utils.exts.shortenValue
 import com.simple.wallet.utils.exts.takeIfNotEmpty
-import com.simple.wallet.utils.exts.toMessageViewItem
 import com.simple.wallet.utils.exts.toTransactionHeaderViewItem
 import com.simple.wallet.utils.exts.toViewItem
 import kotlinx.coroutines.Dispatchers
@@ -57,24 +63,30 @@ import java.math.BigInteger
 class SignMessageConfirmViewModel(
     val mRequest: Request,
 
-    private val signMessageUseCase: SignMessageUseCase,
-    private val detectMessageAsyncUseCase: DetectRequestAsyncUseCase,
-
     private val getChainByUseCase: GetChainByUseCase,
     private val getWalletByUseCase: GetWalletByUseCase,
+
+    private val signMessageUseCase: SignMessageUseCase,
+    private val detectMessageAsyncUseCase: DetectRequestAsyncUseCase,
 ) : BaseViewModel() {
 
 
     @VisibleForTesting
     val currentChain: LiveData<Chain> = liveData {
 
-        postDifferentValueIfActive(getChainByUseCase.execute(GetChainByUseCase.Param(mRequest.message!!.chainId)))
+        getChainByUseCase.execute(GetChainByUseCase.Param(mRequest.message!!.chainId)).firstOrNull()?.let {
+
+            postValue(it)
+        }
     }
 
     @VisibleForTesting
     var currentWallet: LiveData<Wallet> = liveData {
 
-        postDifferentValueIfActive(getWalletByUseCase.execute(GetWalletByUseCase.Param(mRequest.walletAddress!!)))
+        getWalletByUseCase.execute(GetWalletByUseCase.Param(mRequest.walletAddress!!)).firstOrNull()?.let {
+
+            postValue(it)
+        }
     }
 
 
@@ -131,13 +143,13 @@ class SignMessageConfirmViewModel(
 
         val list = arrayListOf<ViewItemCloneable>()
 
-        list.addAll(message.getInfo())
+        list.addAll(message.getMessageInfo())
 
         postDifferentValueIfActive(list)
     }
 
     @VisibleForTesting
-    val transactionMessageViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(isConfirm, requestDetectState) {
+    val messageViewItemList: LiveData<List<ViewItemCloneable>> = combineSources(isConfirm, requestDetectState) {
 
         val request = requestDetectState.get().toSuccess()?.data
 
@@ -163,7 +175,7 @@ class SignMessageConfirmViewModel(
     }
 
     @VisibleForTesting
-    val viewItemList: LiveData<List<ViewItemCloneable>> = combineSources(headerViewItemList, messageInfoViewItemList, transactionMessageViewItemList, bottomViewItemList) {
+    val viewItemList: LiveData<List<ViewItemCloneable>> = combineSources(headerViewItemList, messageInfoViewItemList, messageViewItemList, bottomViewItemList) {
 
         val list = arrayListOf<ViewItemCloneable>()
 
@@ -175,7 +187,7 @@ class SignMessageConfirmViewModel(
             list.addAll(it)
         }
 
-        transactionMessageViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
+        messageViewItemList.getOrEmpty().takeIfNotEmpty()?.let {
 
             list.add(SpaceViewItem(height = DP_20))
             list.addAll(it)
@@ -199,15 +211,27 @@ class SignMessageConfirmViewModel(
     internal val signMessageState: LiveData<ResultState<String>> = MediatorLiveData()
 
 
-    internal val buttonState: LiveData<ResultState<ButtonState>> = listenerSources(currentWallet) {
+    internal val buttonState: LiveData<Enum<*>> = listenerSources(currentWallet, requestDetectState) {
 
-//        if (currentWallet.get().isWatch) {
-//
-//            postValue(ResultState.Success(ButtonState.WATCH_WALLET))
-//        } else {
-//
-//            postValue(ResultState.Success(ButtonState.REVIEW_TRANSACTION))
-//        }
+        (if ( requestDetectState.value.isStart()) {
+
+            ButtonState.DETECT_LOADING
+        } else if (requestDetectState.value.isFailed()) {
+
+            ButtonState.DETECT_FAILED
+        } else if (currentWallet.value?.isWatch == true) {
+
+            ButtonState.WATCH_WALLET
+        } else if (signMessageState.value.isStart()) {
+
+            ButtonState.APPROVAL_LOADING
+        } else {
+
+            ButtonState.REVIEW
+        }).let {
+
+            postDifferentValue(it)
+        }
     }
 
 
@@ -218,7 +242,7 @@ class SignMessageConfirmViewModel(
 
     fun signMessage() = viewModelScope.launch(handler + Dispatchers.IO) {
 
-        val messageViewItemList = transactionMessageViewItemList.getOrEmpty().filterIsInstance<MessageViewItem>()
+        val messageViewItemList = messageViewItemList.getOrEmpty().filterIsInstance<MessageViewItem>()
 
         if (messageViewItemList.isNotEmpty() && messageViewItemList.any { it.needConfirm } && isConfirm.value == false) {
 
@@ -239,7 +263,7 @@ class SignMessageConfirmViewModel(
         }
     }
 
-    private fun Message.getInfo(): List<ViewItemCloneable> {
+    private fun Message.getMessageInfo(): List<ViewItemCloneable> {
 
         val list = arrayListOf<ViewItemCloneable>()
 
@@ -270,9 +294,49 @@ class SignMessageConfirmViewModel(
         return list
     }
 
+    private fun Request?.toMessageViewItem(isConfirm: Boolean): List<ViewItemCloneable> {
+
+
+        if (this == null) {
+
+            return emptyList()
+        }
+
+
+        val list = arrayListOf<Text>()
+
+        if (power?.status in listOf(Request.Power.Status.RISK)) {
+
+            list.add(TextRes(R.string.message_warning_url_risk, TextImage(R.drawable.ic_check_box_normal_accent_24dp, 16.toPx())))
+        }
+
+        if (list.isNotEmpty()) MessageViewItem(id = "KEY").apply {
+
+            list.add(0, TextSpan(R.string.message_warning.toText(), StyleSpan(Typeface.BOLD)))
+
+            message = list.toText("\n").withTextColor(com.google.android.material.R.attr.colorError)
+
+            messageIcon = if (isConfirm) {
+                R.drawable.ic_check_box_select_accent_24dp.toImage()
+            } else {
+                R.drawable.ic_check_box_normal_accent_24dp.toImage()
+            }
+
+            background = R.drawable.bg_corners_16dp_solid_error_10
+
+            needConfirm = true
+        }.let {
+
+            return listOf(it)
+        } else {
+
+            return emptyList()
+        }
+    }
+
     internal enum class ButtonState {
 
-        REVIEW_TRANSACTION, WATCH_WALLET, UNKNOWN
+        REVIEW, WATCH_WALLET, DETECT_LOADING, DETECT_FAILED, APPROVAL_LOADING
     }
 
     internal enum class TransactionCode {

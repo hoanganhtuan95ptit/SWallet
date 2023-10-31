@@ -3,6 +3,7 @@ package com.simple.wallet.domain.usecases.transaction
 import com.simple.coreapp.data.usecase.BaseUseCase
 import com.simple.coreapp.utils.Lock
 import com.simple.coreapp.utils.extentions.offerActive
+import com.simple.state.ResultState
 import com.simple.wallet.domain.entities.Gas
 import com.simple.wallet.domain.repositories.ChainRepository
 import com.simple.wallet.domain.repositories.TransactionRepository
@@ -24,12 +25,10 @@ class GetGasAsyncUseCase(
     private val chainIdAndGasList = ConcurrentHashMap<Long, Pair<Long, List<Gas>>>()
 
 
-    override suspend fun execute(param: Param?): Flow<List<Gas>> = channelFlow<List<Gas>> {
+    override suspend fun execute(param: Param?): Flow<List<Gas>> = channelFlow {
         checkNotNull(param)
 
-
         val rpcUrls = chainRepository.getRpcList(param.chainId, 3)
-
 
         launchScheduleWithLock(param.chainId) {
 
@@ -49,7 +48,16 @@ class GetGasAsyncUseCase(
             }
 
 
-            val list = transactionRepository.getGasList(param.chainId, rpcUrls, true)
+            val gasListState = transactionRepository.getGasList(param.chainId, rpcUrls, true)
+
+            if (gasListState !is ResultState.Success) {
+
+                offerActive(gasList)
+                return@launchScheduleWithLock 5 * 1000L
+            }
+
+
+            val list = gasListState.data
 
             if (list.isEmpty() || list.all { it.gasPrice in listOf("", "0", "0.0") }) {
 

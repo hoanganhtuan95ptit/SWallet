@@ -3,13 +3,17 @@ package com.simple.wallet.data.repositories
 import com.simple.task.executeSyncByPriority
 import com.simple.wallet.data.cache.AppCache
 import com.simple.wallet.data.dao.chain.ChainDao
+import com.simple.wallet.data.dao.chain.RpcChainDao
 import com.simple.wallet.data.task.chain.ChainSyncTask
 import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.repositories.ChainRepository
 
 class ChainRepositoryImpl(
     private val appCache: AppCache,
+
     private val chainDao: ChainDao,
+    private val rpcChainDao: RpcChainDao,
+
     private val chainSyncTask: List<ChainSyncTask>
 ) : ChainRepository {
 
@@ -55,7 +59,8 @@ class ChainRepositoryImpl(
     }
 
     override fun getRpcList(chainId: Long, limit: Int): List<String> {
-        TODO("Not yet implemented")
+
+        return rpcChainDao.findListBy(chainId, limit).map { it.url }
     }
 }
 

@@ -13,6 +13,11 @@ data class Wallet(
     var addressMap: Map<String, Chain.Type> = emptyMap()
 ) : Entity {
 
+    val isEmpty: Boolean
+        get() = id == ID_EMPTY
+
+    val isWatch: Boolean
+        get() = type == Type.ADDRESS
 
     val chainType: List<Chain.Type>
         get() = addressMap.toList().associateBy { it.second }.keys.toList()

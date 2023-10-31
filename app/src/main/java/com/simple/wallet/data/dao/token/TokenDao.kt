@@ -15,6 +15,17 @@ private const val TABLE_NAME = "tokens"
 @Dao
 interface TokenDao {
 
+    fun findListBy(chainId: List<Long>, tokenType: List<Token.Type>): List<Token> = findRoomListByChainIdAndType(chainId, tokenType.map { it.value }).toEntity()
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE chainId IN (:chainId) AND type COLLATE NOCASE IN (:tokenType)")
+    fun findRoomListByChainIdAndType(chainId: List<Long>, tokenType: List<String>): List<RoomToken>
+
+
+    fun findListBy(chainId: List<Long>, tokenAddress: List<String>, tokenType: List<Token.Type>): List<Token> = findRoomListBy(chainId, tokenAddress, tokenType.map { it.value }).toEntity()
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE chainId IN (:chainId) AND address IN (:tokenAddress) AND type COLLATE NOCASE IN (:tokenType)")
+    fun findRoomListBy(chainId: List<Long>, tokenAddress: List<String>, tokenType: List<String>): List<RoomToken>
+
 
     fun insert(vararg entity: Token) = insertOrUpdate(entity.toList().toRoom())
 

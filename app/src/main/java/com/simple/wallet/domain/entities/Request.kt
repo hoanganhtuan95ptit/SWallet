@@ -30,6 +30,10 @@ class Request(
         @JsonIgnore set(value) = putExtra(ExtraType.MESSAGE, value)
         @JsonIgnore get() = getExtra(ExtraType.MESSAGE)
 
+    var chainId: Long?
+        @JsonIgnore set(value) = putExtra(ExtraType.CHAIN_ID, value)
+        @JsonIgnore get() = getExtra(ExtraType.CHAIN_ID)
+
     var transaction: Transaction?
         @JsonIgnore set(value) = putExtra(ExtraType.TRANSACTION, value)
         @JsonIgnore get() = getExtra(ExtraType.TRANSACTION)
@@ -115,6 +119,7 @@ class Request(
         POWER("POWER"),
         TOPIC("TOPIC"),
         MESSAGE("MESSAGE"),
+        CHAIN_ID("CHAIN_ID"),
         TRANSACTION("TRANSACTION"),
         WALLET_ADDRESS("WALLET_ADDRESS")
     }

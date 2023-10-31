@@ -1,5 +1,6 @@
 package com.simple.wallet.di
 
+import com.one.web3.task.privatekey.PrivateKeyTask
 import com.simple.analytics.Analytics
 import com.simple.crashlytics.Crashlytics
 import com.simple.wallet.data.task.CameraActionScanTask
@@ -22,6 +23,9 @@ import com.simple.wallet.data.task.sign.SignMessageEvmTask
 import com.simple.wallet.data.task.sign.SignMessageTypeEvmTask
 import com.simple.wallet.data.task.sign.SignPersonalMessageEvmTask
 import com.simple.wallet.data.task.sign.SignTask
+import com.simple.wallet.data.task.transaction.gasprice.GasPriceEvmCallTask
+import com.simple.wallet.data.task.transaction.gasprice.GasPriceTask
+import com.simple.wallet.data.task.wallet.PrivateKeyTaskImpl
 import com.simple.wallet.domain.tasks.CameraActionTask
 import com.simple.wallet.domain.tasks.CameraDetectTask
 import com.simple.wallet.domain.tasks.CameraInfoTask
@@ -86,4 +90,9 @@ val taskModule = module {
 
     single { DefaultChainSyncTask(get(), get(), get(), get(), get(), get()) } bind ChainSyncTask::class
 
+
+    single { GasPriceEvmCallTask() } bind GasPriceTask::class
+
+
+    single { PrivateKeyTaskImpl(get(), get()) } bind PrivateKeyTask::class
 }

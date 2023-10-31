@@ -280,11 +280,11 @@ class WalletConnectSocketImpl(
             }
         }
 
-//        launch {
-//            val a = "{\"chainId\":\"eip155:1\",\"peerMetaData\":{\"description\":\"Krystal wallet connect, powered by BlockNative\",\"icons\":[\"https://wallet.krystal.app/icon-192x192.png\",\"https://wallet.krystal.app/static/media/krystal.1dda4ba0.svg\"],\"name\":\"Krystal\",\"redirect\":\"\",\"url\":\"https://wallet.krystal.app\",\"verifyUrl\":null},\"request\":{\"id\":1698641037019435,\"method\":\"personal_sign\",\"params\":\"[\\\"0x57656c636f6d6520746f204b72797374616c210a0a5369676e2074686973206d65737361676520746f2070726f766520796f7520686176652061636365737320746f20746869732077616c6c657420616e64207765276c6c206c6f6720796f7520696e2e205468697320776f6e277420636f737420796f7520616e792067617320666565732e0a0a57616c6c657420616464726573733a203078333938303666666631303363356137343963366133383138306333373739643037393364613436360a0a5b323032332d31302d33302030343a34333a3536202b30303030205554435d\\\",\\\"0x39806fff103c5a749c6a38180c3779d0793da466\\\",\\\"1\\\"]\"},\"topic\":\"4963f34ae7c0919405fd12e6af5f1803641bd7e0ed5862366e35dc5bc427696e\"}"
-//
+        launch {
+            val a = "{\"chainId\":\"eip155:1\",\"peerMetaData\":{\"description\":\"React App for WalletConnect\",\"icons\":[\"https://avatars.githubusercontent.com/u/37784886\"],\"name\":\"React App\",\"url\":\"https://react-app.walletconnect.com\"},\"request\":{\"id\":1698665471610818,\"method\":\"eth_signTransaction\",\"params\":\"[{\\\"from\\\":\\\"0xc8c07d6ddbab370379b3fd86a86352ff7280c481\\\",\\\"to\\\":\\\"0xc8c07d6ddbab370379b3fd86a86352ff7280c481\\\",\\\"data\\\":\\\"0x\\\",\\\"nonce\\\":\\\"0x00\\\",\\\"gasPrice\\\":\\\"0x0322529fe8\\\",\\\"gasLimit\\\":\\\"0x5208\\\",\\\"value\\\":\\\"0x00\\\"}]\"},\"topic\":\"122a00928d6b0aaffc6dcbc6c69d7ecdb9d4e6901bf7038357de4d5e3115463f\"}"
+
 //            mutableSharedFlow.emit(a.toObjectV2<Wallet.Model.SessionRequest>())
-//        }
+        }
 
         awaitClose {
             logAnalytics(TAG to "onSessionRequestAsync: awaitClose")

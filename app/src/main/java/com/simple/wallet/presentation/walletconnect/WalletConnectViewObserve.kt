@@ -1,6 +1,5 @@
 package com.simple.wallet.presentation.walletconnect
 
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.simple.coreapp.utils.ext.getSerializableListOrNull
 import com.simple.coreapp.utils.ext.getSerializableOrNull
@@ -16,6 +15,7 @@ import com.simple.wallet.DATA_STATE
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.presentation.ViewObserve
 import com.simple.wallet.presentation.message.sign.SignMessageConfirmEvent
+import com.simple.wallet.presentation.transaction.send.SendTransactionEvent
 import com.simple.wallet.utils.exts.takeIfNotEmpty
 
 class WalletConnectViewObserve : ViewObserve {
@@ -67,7 +67,7 @@ class WalletConnectViewObserve : ViewObserve {
 
                 Request.Method.SEND_TRANSACTION, Request.Method.SIGN_TRANSACTION -> {
 
-//                    offerNavEvent(SendTransactionEvent(keyRequestWalletConnect, data))
+                    activity.offerEvent(SendTransactionEvent(keyRequestWalletConnect, data))
                 }
 
                 else -> {
