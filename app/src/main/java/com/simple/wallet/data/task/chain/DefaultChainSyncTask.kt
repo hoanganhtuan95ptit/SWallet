@@ -34,7 +34,7 @@ class DefaultChainSyncTask(
 
         val versionCachePhonetics = appCache.getVersionCachePhonetics()
 
-        if (version <= versionCachePhonetics) return
+//        if (version <= versionCachePhonetics) return
 
         var chainRepositoryList = readTextFile(context.resources.openRawResource(R.raw.chain)).toListOrEmpty<ChainResponse>().apply {
 

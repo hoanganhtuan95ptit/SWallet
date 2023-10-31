@@ -1,5 +1,6 @@
 package com.simple.wallet.domain.usecases.transaction
 
+import android.util.Log
 import com.simple.coreapp.data.usecase.BaseUseCase
 import com.simple.coreapp.utils.extentions.offerActive
 import com.simple.state.ResultState

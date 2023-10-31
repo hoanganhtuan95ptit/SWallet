@@ -14,7 +14,6 @@ import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
 import androidx.transition.TransitionSet
-import androidx.transition.TransitionSet.ORDERING_TOGETHER
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
 import com.simple.core.utils.extentions.asObject
@@ -233,7 +232,7 @@ internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<Popup
 
             bindingAction.root.postAwait()
 
-            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350).setOrdering(ORDERING_TOGETHER)) {
+            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350)) {
 
                 bindButtonState(state)
             } else {

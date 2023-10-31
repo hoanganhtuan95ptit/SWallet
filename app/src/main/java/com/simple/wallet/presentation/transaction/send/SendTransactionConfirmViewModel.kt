@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.one.web3.utils.fromWei
 import com.one.web3.utils.toWei
 import com.simple.adapter.ViewItemCloneable
+import com.simple.core.utils.extentions.asObjectOrNull
 import com.simple.coreapp.ui.adapters.SpaceViewItem
 import com.simple.coreapp.utils.AppException
 import com.simple.coreapp.utils.extentions.combineSources
@@ -37,10 +38,13 @@ import com.simple.state.toSuccess
 import com.simple.wallet.DP_20
 import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Chain
+import com.simple.wallet.domain.entities.Gas
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.domain.entities.Token
 import com.simple.wallet.domain.entities.Transaction
 import com.simple.wallet.domain.entities.Wallet
+import com.simple.wallet.domain.entities.extra.ApproveExtra
+import com.simple.wallet.domain.entities.extra.TransferExtra
 import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
 import com.simple.wallet.domain.usecases.chain.GetChainByUseCase
 import com.simple.wallet.domain.usecases.token.GetTokenByUseCase
@@ -49,12 +53,12 @@ import com.simple.wallet.domain.usecases.wallet.GetWalletByUseCase
 import com.simple.wallet.presentation.adapters.BottomViewItem
 import com.simple.wallet.presentation.adapters.KeyValueViewItemV3
 import com.simple.wallet.presentation.adapters.MessageViewItem
+import com.simple.wallet.presentation.adapters.TokenApproveViewItem
 import com.simple.wallet.presentation.transaction.send.adapter.FeeTransactionInfoViewItem
 import com.simple.wallet.utils.exts.FormatNumberType
 import com.simple.wallet.utils.exts.divideToPowerTen
 import com.simple.wallet.utils.exts.shortenValue
 import com.simple.wallet.utils.exts.takeIfNotEmpty
-import com.simple.wallet.utils.exts.toBigDecimalOrDefaultZero
 import com.simple.wallet.utils.exts.toDisplay
 import com.simple.wallet.utils.exts.toTransactionHeaderViewItem
 import kotlinx.coroutines.Dispatchers
@@ -195,9 +199,10 @@ class SendTransactionConfirmViewModel(
         val request = requestDetectState.toSuccess()?.data
 
 
-        val gasPrice = gas.get().gasPrice.toBigDecimalOrDefaultZero()
+        val gas = gas.get()
 
-        val gasLimit = gasLimitState.get().toSuccess()?.data?.let { Pair(gasLimit.get().toBigDecimal(), Range(it.second.lower.toBigDecimal(), it.second.upper.toBigDecimal())) }
+        val gasLimitInfo = gasLimitState.get().toSuccess()?.data?.let { Pair(gasLimit.get().toBigDecimal(), Range(it.second.lower.toBigDecimal(), it.second.upper.toBigDecimal())) } ?: return@combineSources
+
 
         val bonusFee = bonusFee.get()
 
@@ -206,7 +211,7 @@ class SendTransactionConfirmViewModel(
 
         val list = arrayListOf<ViewItemCloneable>()
 
-        list.addAll(request.toMessageViewItem(isConfirm.get(), gasPrice, gasLimit, nativeToken, bonusFee))
+        list.addAll(request.toMessageViewItem(isConfirm.get(), gas, gasLimitInfo, nativeToken, bonusFee))
 
         postDifferentValueIfActive(list)
     }
@@ -315,10 +320,10 @@ class SendTransactionConfirmViewModel(
 
             val transaction = transaction.get()
 
-            transaction.nonce = customNonce.value ?: -BigInteger.ONE
+            transaction.nonce = nonce.get()
             transaction.gasLimit = gasLimit.get()
-            transaction.gasPrice = gas.gasPrice.toBigDecimal()
-            transaction.priorityFee = gas.priorityFee.toBigDecimal()
+            transaction.gasPriceWei = gas.gasPriceWei
+            transaction.priorityFeeWei = gas.priorityFeeWei
 
             sendTransactionState.postDifferentValue(ResultState.Start)
 
@@ -335,49 +340,40 @@ class SendTransactionConfirmViewModel(
 
         if (type == Transaction.Type.SEND) {
 
-//            val extra = this.extra.asObjectOrNull<Transferxtra>()!!
-//
-//            val keyReceiver = R.string.title_receiver.toText()
-//
-//            val valueReceiver = extra.receiverAddress.shortenValue().toText().withStyle(Typeface.BOLD)
-//
-//            list.add(KeyValueViewItemV3("RECEIVER", key = keyReceiver, value = valueReceiver).refresh())
-//
-//
-//            val keyValue = R.string.title_amount_transfer.toText()
-//
-//            val valueValue = listOf(
-//                ("-" + extra.amountTransfer.toBigDecimal().divideToPowerTen(extra.tokenTransfer.decimals).toDisplay(FormatNumberType.BALANCE)).toText(),
-//                extra.tokenTransfer.symbol.uppercase().toText()
-//            ).toText(" ").let {
-//
-//                TextSpan(it, StyleSpan(Typeface.BOLD))
-//            }
-//
-//            list.add(KeyValueViewItemV3("VALUE", key = keyValue, value = valueValue).refresh())
+            val extra = this.extra.asObjectOrNull<TransferExtra>()!!
+
+            val keyReceiver = R.string.title_receiver.toText()
+
+            val valueReceiver = extra.receiverAddress.shortenValue().toText().withStyle(Typeface.BOLD)
+
+            list.add(KeyValueViewItemV3("RECEIVER", key = keyReceiver, value = valueReceiver).refresh())
+
+
+            val keyValue = R.string.title_amount_transfer.toText()
+
+            val valueValue = listOf(
+                listOf("-".toText(), extra.amountTransfer.toBigDecimal().divideToPowerTen(extra.tokenTransfer.decimals).toDisplay(FormatNumberType.BALANCE)).toText(" "),
+                extra.tokenTransfer.symbol.uppercase().toText()
+            ).toText(" ").withStyle(Typeface.BOLD)
+
+            list.add(KeyValueViewItemV3("VALUE", key = keyValue, value = valueValue).refresh())
         } else if (type == Transaction.Type.APPROVAL) {
 
-//            val extra = this.extra.asObjectOrNull<ApproveExtra>()!!
-//
-//            val keyReceiver = R.string.title_sender.toText()
-//
-//            val valueReceiver = extra.senderAddress.shortenValue().toText().let {
-//
-//                TextSpan(it, StyleSpan(Typeface.BOLD))
-//            }
-//
-//            list.add(KeyValueViewItemV3("SENDER", key = keyReceiver, value = valueReceiver).refresh())
-//
-//
-//            if (extra.amountApprove > BigInteger.ZERO) list.add(TokenApproveViewItem(extra).refresh())
+            val extra = this.extra.asObjectOrNull<ApproveExtra>()!!
+
+            val keyReceiver = R.string.title_sender.toText()
+
+            val valueReceiver = extra.senderAddress.shortenValue().toText().withStyle(Typeface.BOLD)
+
+            list.add(KeyValueViewItemV3("SENDER", key = keyReceiver, value = valueReceiver).refresh())
+
+
+            if (extra.amountApprove > BigInteger.ZERO) list.add(TokenApproveViewItem(extra).refresh())
         } else {
 
             val keySender = R.string.title_sender.toText()
 
-            val valueSender = to.shortenValue().toText().let {
-
-                TextSpan(it, StyleSpan(Typeface.BOLD))
-            }
+            val valueSender = to.shortenValue().toText().withStyle(Typeface.BOLD)
 
             list.add(KeyValueViewItemV3("SENDER", key = keySender, value = valueSender).refresh())
 
@@ -402,22 +398,25 @@ class SendTransactionConfirmViewModel(
         return list
     }
 
-    private fun Request?.toMessageViewItem(isConfirm: Boolean, gasPrice: BigDecimal? = null, gasLimit: Pair<BigDecimal, Range<BigDecimal>>? = null, native: Token? = null, bonusFee: BigDecimal? = null): List<ViewItemCloneable> {
-
+    private fun Request?.toMessageViewItem(isConfirm: Boolean, gas: Gas, gasLimitInfo: Pair<BigDecimal, Range<BigDecimal>>, native: Token, bonusFee: BigDecimal): List<ViewItemCloneable> {
 
         if (this == null) {
 
             return emptyList()
         }
 
+        val gasLimit = gasLimitInfo.first
+
+        val gasLimitRange = gasLimitInfo.second
+
 
         val list = arrayListOf<Text>()
 
-        if (bonusFee != null && gasPrice != null && gasLimit != null && native != null && gasLimit.first !in gasLimit.second) {
+        if (gasLimit !in gasLimitRange) {
 
             val from = StringBuilder()
                 .append(
-                    gasPrice.multiply(gasLimit.second.lower).toWei()
+                    gas.gasPriceWei.multiply(gasLimitInfo.second.lower)
                         .plus(bonusFee)
                         .fromWei(Convert.Unit.ETHER).toDisplay(FormatNumberType.GAS_FEE)
                 )
@@ -426,7 +425,7 @@ class SendTransactionConfirmViewModel(
 
             val to = StringBuilder()
                 .append(
-                    gasPrice.multiply(gasLimit.second.upper).toWei()
+                    gas.gasPriceWei.multiply(gasLimitRange.upper).toWei()
                         .plus(bonusFee)
                         .fromWei(Convert.Unit.ETHER)
                 )

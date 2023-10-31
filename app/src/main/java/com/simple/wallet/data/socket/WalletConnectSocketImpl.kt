@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.simple.analytics.logAnalytics
 import com.simple.core.utils.extentions.resumeActive
 import com.simple.core.utils.extentions.toJson
+import com.simple.core.utils.extentions.toObjectV2
 import com.simple.coreapp.utils.extentions.offerActive
 import com.simple.coreapp.utils.extentions.offerActiveAwait
 import com.simple.crashlytics.logCrashlytics
@@ -281,9 +282,10 @@ class WalletConnectSocketImpl(
         }
 
         launch {
-            val a = "{\"chainId\":\"eip155:1\",\"peerMetaData\":{\"description\":\"React App for WalletConnect\",\"icons\":[\"https://avatars.githubusercontent.com/u/37784886\"],\"name\":\"React App\",\"url\":\"https://react-app.walletconnect.com\"},\"request\":{\"id\":1698665471610818,\"method\":\"eth_signTransaction\",\"params\":\"[{\\\"from\\\":\\\"0xc8c07d6ddbab370379b3fd86a86352ff7280c481\\\",\\\"to\\\":\\\"0xc8c07d6ddbab370379b3fd86a86352ff7280c481\\\",\\\"data\\\":\\\"0x\\\",\\\"nonce\\\":\\\"0x00\\\",\\\"gasPrice\\\":\\\"0x0322529fe8\\\",\\\"gasLimit\\\":\\\"0x5208\\\",\\\"value\\\":\\\"0x00\\\"}]\"},\"topic\":\"122a00928d6b0aaffc6dcbc6c69d7ecdb9d4e6901bf7038357de4d5e3115463f\"}"
 
-//            mutableSharedFlow.emit(a.toObjectV2<Wallet.Model.SessionRequest>())
+            val a = "{\"chainId\":\"eip155:137\",\"peerMetaData\":{\"description\":\"Krystal wallet connect, powered by BlockNative\",\"icons\":[\"https://wallet.krystal.app/icon-192x192.png\",\"https://wallet.krystal.app/static/media/krystal.1dda4ba0.svg\"],\"name\":\"Krystal\",\"url\":\"https://wallet.krystal.app\"},\"request\":{\"id\":1698737314260042,\"method\":\"eth_sendTransaction\",\"params\":\"[{\\\"from\\\":\\\"0x7a2266331ac908931eef379650c9731cc60e5558\\\",\\\"to\\\":\\\"0x7a2266331ac908931eef379650c9731cc60e5558\\\",\\\"value\\\":\\\"0x9184e72a000\\\",\\\"data\\\":\\\"0x\\\",\\\"gasPrice\\\":null,\\\"maxFeePerGas\\\":null,\\\"maxPriorityFeePerGas\\\":null,\\\"gasLimit\\\":\\\"25200\\\",\\\"gas\\\":\\\"0x6270\\\"}]\"},\"topic\":\"e64b15ee919d3b2fc3b4f2da2989562df8988a4d69be29e62f2d9d2c474c97a4\"}"
+
+            mutableSharedFlow.emit(a.toObjectV2<Wallet.Model.SessionRequest>())
         }
 
         awaitClose {

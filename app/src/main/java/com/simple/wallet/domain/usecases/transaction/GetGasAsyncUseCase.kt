@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
+import java.math.BigDecimal
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
@@ -59,7 +60,7 @@ class GetGasAsyncUseCase(
 
             val list = gasListState.data
 
-            if (list.isEmpty() || list.all { it.gasPrice in listOf("", "0", "0.0") }) {
+            if (list.isEmpty() || list.all { it.gasPriceWei in listOf(BigDecimal.ZERO) }) {
 
                 if (hasCache) offerActive(gasList)
                 return@launchScheduleWithLock if (hasCache) 5 * 1000L else 500L
@@ -78,7 +79,7 @@ class GetGasAsyncUseCase(
         }
     }.distinctUntilChangedBy {
 
-        it.map { it.gasPrice }
+        it.map { gas -> gas.gasPriceWei }
     }
 
     private fun CoroutineScope.launchScheduleWithLock(owner: Any, block: suspend CoroutineScope.() -> Long) = launchSchedule {

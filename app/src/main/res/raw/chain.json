@@ -2248,12 +2248,12 @@
     },
     "urls": [
       {
-        "url": "https://binance.llamarpc.com",
+        "url": "https://bsc-dataseed.bnbchain.org",
         "type": "RPC",
         "priority": 2147483647
       },
       {
-        "url": "https://bsc-dataseed.bnbchain.org",
+        "url": "https://binance.llamarpc.com",
         "type": "RPC",
         "priority": 2147483646
       },

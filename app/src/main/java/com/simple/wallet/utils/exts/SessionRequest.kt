@@ -77,9 +77,9 @@ private fun List<JsonNode>.getTransactionOrNull(chainId: Long, method: Enum<*>) 
         value = this.getString("value").hexToBigIntegerOrZero(),
 
         nonce = BigInteger.ZERO,
-        gasPrice = this.getString("maxFeePerGas").hexToBigDecimalOrZero(),
+        gasPriceWei = this.getString("maxFeePerGas").hexToBigDecimalOrZero(),
         gasLimit = this.getString("gasLimit").hexToBigIntegerOrZero(),
-        priorityFee = this.getString("maxPriorityFeePerGas").hexToBigDecimalOrZero()
+        priorityFeeWei = this.getString("maxPriorityFeePerGas").hexToBigDecimalOrZero()
     )
 
     transaction.chainId = chainId

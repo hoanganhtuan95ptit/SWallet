@@ -10,7 +10,7 @@ data class Transaction(
 
     var data: String, var value: BigInteger,
 
-    var nonce: BigInteger, var gasPrice: BigDecimal, var gasLimit: BigInteger, var priorityFee: BigDecimal
+    var nonce: BigInteger, var gasPriceWei: BigDecimal, var gasLimit: BigInteger, var priorityFeeWei: BigDecimal
 ) : Entity {
 
     var time: Long = 0

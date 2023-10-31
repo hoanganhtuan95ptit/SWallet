@@ -1,6 +1,7 @@
 package com.simple.wallet.di
 
 import androidx.room.Room
+import com.simple.wallet.data.dao.AppRoomDatabase
 import com.simple.wallet.data.dao.chain.ChainRoomDatabase
 import com.simple.wallet.data.dao.token.TokenRoomDatabase
 import com.simple.wallet.data.dao.wallet.WalletRoomDatabase
@@ -8,6 +9,16 @@ import com.simple.wallet.data.dao.walletconnect.WalletConnectSessionDaoRoomDatab
 import org.koin.dsl.module
 
 val daoModule = module {
+
+    single {
+        Room.databaseBuilder(get(), AppRoomDatabase::class.java, "app_database")
+            .build()
+    }
+
+    single {
+        get<AppRoomDatabase>().urlDao()
+    }
+
 
     single {
         Room.databaseBuilder(get(), WalletRoomDatabase::class.java, "wallet_database")

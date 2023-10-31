@@ -1,16 +1,16 @@
 package com.simple.wallet.domain.entities
 
+import java.math.BigDecimal
+
 data class Gas(
     var id: String = "",
 
-    var baseFee: String = "",
-
-    var gasPrice: String = "",
-
-    var priorityFee: String = "",
+    var baseFeeWei: BigDecimal = BigDecimal.ZERO,
+    var gasPriceWei: BigDecimal = BigDecimal.ZERO,
+    var priorityFeeWei: BigDecimal = BigDecimal.ZERO,
+) : Entity {
 
     var isDefault: Boolean = false
-) : Entity {
 
     val isCustom: Boolean
         get() = id == GAS_ID_CUSTOM

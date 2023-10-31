@@ -63,7 +63,7 @@ val useCaseModule = module {
     single { GetRequestAsyncUseCase(get()) }
 
 
-    single { DetectRequestAsyncUseCase(getAll()) }
+    single { DetectRequestAsyncUseCase(get(), getAll()) }
 
 
     single { GetChainSelectedUseCase(get()) }

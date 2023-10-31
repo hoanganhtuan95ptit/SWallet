@@ -3,7 +3,6 @@ package com.simple.wallet.data.repositories
 import com.one.web3.Param
 import com.one.web3.task.gaslimit.GasLimitTask
 import com.one.web3.task.transaction.send.SendTransactionTask
-import com.one.web3.utils.toWei
 import com.simple.state.ResultState
 import com.simple.state.toFailed
 import com.simple.task.executeSyncByPriority
@@ -61,8 +60,8 @@ class TransactionRepositoryImpl(
 
             nonce = transaction.nonce,
             gasLimit = transaction.gasLimit,
-            gasPriceWei = transaction.gasPrice.toWei().toBigInteger(),
-            priorityFeeWei = transaction.priorityFee.toWei().toBigInteger(),
+            gasPriceWei = transaction.gasPriceWei.toBigInteger(),
+            priorityFeeWei = transaction.priorityFeeWei.toBigInteger(),
 
             chainId = transaction.chainId,
             rpcUrls = rpcUrls,

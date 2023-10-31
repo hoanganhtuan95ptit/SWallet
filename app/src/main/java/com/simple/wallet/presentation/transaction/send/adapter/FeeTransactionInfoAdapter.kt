@@ -3,7 +3,6 @@ package com.simple.wallet.presentation.transaction.send.adapter
 import android.view.View
 import android.view.ViewGroup
 import com.one.web3.utils.fromWei
-import com.one.web3.utils.toWei
 import com.simple.adapter.BaseBindingViewHolder
 import com.simple.adapter.ViewItemAdapter
 import com.simple.adapter.ViewItemCloneable
@@ -26,7 +25,6 @@ import com.simple.wallet.domain.entities.Gas
 import com.simple.wallet.domain.entities.Token
 import com.simple.wallet.utils.exts.FormatNumberType
 import com.simple.wallet.utils.exts.getSettingOption
-import com.simple.wallet.utils.exts.toBigDecimalOrDefaultZero
 import com.simple.wallet.utils.exts.toDisplay
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -92,7 +90,7 @@ class FeeTransactionInfoViewItem(
 
     fun refresh(gas: Gas, gasLimit: BigInteger, nativeToken: Token, currentChain: Chain, transactionFee: BigDecimal) = apply {
 
-        val gasFee = gas.gasPrice.toBigDecimalOrDefaultZero().multiply(gasLimit.toBigDecimal()).toWei()
+        val gasFee = gas.gasPriceWei.multiply(gasLimit.toBigDecimal())
             .plus(transactionFee)
             .fromWei(Convert.Unit.ETHER)
 
@@ -118,8 +116,8 @@ class FeeTransactionInfoViewItem(
 
         val feeValueDetail = if (transactionFee <= BigDecimal.ZERO && currentChain.type == Chain.Type.EVM) TextRes(
             R.string.gas_formula,
-            gas.gasPrice.toBigDecimalOrDefaultZero().toDisplay(FormatNumberType.BALANCE),
-            TextRes(if (currentChain.isEIP1559) R.string.formula_max_gas else R.string.formula_gas_price),
+            gas.gasPriceWei.fromWei().toDisplay(FormatNumberType.BALANCE),
+            TextRes(if (gas.priorityFeeWei > BigDecimal.ZERO) R.string.formula_max_gas else R.string.formula_gas_price),
             TextStr(gasLimit.toBigDecimal().toString()),
             TextRes(R.string.formula_gas_limit)
         ) else {

@@ -2,6 +2,7 @@ package com.simple.wallet.data.task.wallet
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AesGcmKeyManager
@@ -81,6 +82,8 @@ class PrivateKeyTaskImpl(
     private fun getStoredKeyFile(walletId: String): File {
 
         val file = File(getDirectoryPath() + "/" + walletId + ".json")
+
+        Log.d("tuanha", "getStoredKeyFile: ${file.absolutePath}")
 
         if (!file.exists()) {
 

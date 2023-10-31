@@ -89,7 +89,7 @@ class WalletRepositoryImpl(
 
             val generatedPassword = generatePassword()
 
-            wallet.id = StoredKey.importPrivateKey(key.fromHex(), name, generatedPassword, coinType).identifier()
+            wallet.id = StoredKey.importPrivateKey(key.fromHex(), name, generatedPassword, coinType).insertStoredKey()
             wallet.cipher = cipher(generatedPassword)
         } else {
 

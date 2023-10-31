@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
@@ -33,7 +32,6 @@ import com.simple.coreapp.utils.extentions.observeQueue
 import com.simple.coreapp.utils.extentions.postAwait
 import com.simple.coreapp.utils.extentions.scaleAnimAwait
 import com.simple.coreapp.utils.extentions.setDebouncedClickListener
-import com.simple.coreapp.utils.extentions.setVisible
 import com.simple.coreapp.utils.extentions.submitListAwait
 import com.simple.coreapp.utils.extentions.toPx
 import com.simple.coreapp.utils.extentions.vibrate
@@ -41,8 +39,6 @@ import com.simple.navigation.domain.entities.NavigationEvent
 import com.simple.navigation.utils.ext.setNavigationResult
 import com.simple.navigation.utils.ext.setNavigationResultListener
 import com.simple.state.ResultState
-import com.simple.state.isFailed
-import com.simple.state.isStart
 import com.simple.state.isSuccess
 import com.simple.wallet.DATA
 import com.simple.wallet.DATA_STATE
@@ -50,7 +46,6 @@ import com.simple.wallet.PARAM_DATA
 import com.simple.wallet.R
 import com.simple.wallet.databinding.LayoutActionConfirmBinding
 import com.simple.wallet.databinding.PopupListBinding
-import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Request
 import com.simple.wallet.presentation.adapters.BottomAdapter
 import com.simple.wallet.presentation.adapters.HeaderAdapter
@@ -75,12 +70,6 @@ class SendTransactionConfirmFragment : BaseViewModelSheetFragment<PopupListBindi
     private val request: Request by lazy {
 
         requireArguments().getSerializableOrNull(PARAM_DATA)!!
-    }
-
-
-    private val chainId: Long by lazy {
-
-        request.transaction?.chainId ?: Chain.ETHEREUM_ID
     }
 
 
@@ -258,7 +247,7 @@ class SendTransactionConfirmFragment : BaseViewModelSheetFragment<PopupListBindi
 
             bindingAction.root.postAwait()
 
-            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350).setOrdering(TransitionSet.ORDERING_TOGETHER)) {
+            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(500)) {
 
                 bindButtonState(state)
             } else {
@@ -285,17 +274,6 @@ class SendTransactionConfirmFragment : BaseViewModelSheetFragment<PopupListBindi
 
                 return@observeLaunch
             }
-
-
-            val bindingAction = bindingAction ?: return@observeLaunch
-
-            bindingAction.tvNegative.isClickable = it.isFailed()
-            bindingAction.tvPositive.isClickable = it.isFailed()
-
-            bindingAction.progressPositive.setVisible(it.isStart())
-            bindingAction.tvNegative.setVisible(!it.isStart())
-
-            TransitionManager.beginDelayedTransition(bindingAction.root, TransitionSet().setDuration(350).addTransition(ChangeBounds()).addTransition(Fade()))
         }
 
         viewItemListDisplay.observeQueue(viewLifecycleOwner, tag = this@SendTransactionConfirmFragment.javaClass.name, context = handler) {
@@ -328,13 +306,12 @@ class SendTransactionConfirmFragment : BaseViewModelSheetFragment<PopupListBindi
             ButtonState.WATCH_WALLET -> getString(R.string.action_not_support)
             else -> getString(R.string.action_confirm)
         }
-        bindingAction.progressPositive.setVisible(state in listOf(ButtonState.APPROVAL_LOADING, ButtonState.DETECT_LOADING))
+        bindingAction.progressPositive.isVisible = state in listOf(ButtonState.APPROVAL_LOADING, ButtonState.DETECT_LOADING)
 
 
         bindingAction.tvNegative.isClickable = state in listOf(ButtonState.DETECT_FAILED, ButtonState.REVIEW)
         bindingAction.tvNegative.isVisible = when (state) {
             in listOf(ButtonState.DETECT_FAILED, ButtonState.DETECT_LOADING, ButtonState.REVIEW) -> true
-
             else -> false
         }
         bindingAction.tvNegative.text = when (state) {

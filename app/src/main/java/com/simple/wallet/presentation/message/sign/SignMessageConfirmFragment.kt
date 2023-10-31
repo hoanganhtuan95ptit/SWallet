@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.simple.adapter.MultiAdapter
@@ -42,8 +41,6 @@ import com.simple.navigation.NavigationProvider
 import com.simple.navigation.domain.entities.NavigationEvent
 import com.simple.navigation.utils.ext.setNavigationResult
 import com.simple.state.ResultState
-import com.simple.state.isFailed
-import com.simple.state.isStart
 import com.simple.state.isSuccess
 import com.simple.wallet.DATA
 import com.simple.wallet.DATA_STATE
@@ -220,7 +217,7 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
 
             bindingAction.root.postAwait()
 
-            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350).setOrdering(TransitionSet.ORDERING_TOGETHER)) {
+            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350)) {
 
                 bindButtonState(state)
             } else {
@@ -248,17 +245,6 @@ class SignMessageConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, 
 
                 return@observeLaunch
             }
-
-
-            val bindingAction = bindingAction ?: return@observeLaunch
-
-            bindingAction.tvNegative.isClickable = it.isFailed()
-            bindingAction.tvPositive.isClickable = it.isFailed()
-
-            bindingAction.progressPositive.setVisible(it.isStart())
-            bindingAction.tvNegative.setVisible(!it.isStart())
-
-            TransitionManager.beginDelayedTransition(bindingAction.root, TransitionSet().setDuration(350).addTransition(ChangeBounds()).addTransition(Fade()))
         }
 
         viewItemListDisplay.observeQueue(viewLifecycleOwner, tag = this@SignMessageConfirmFragment.javaClass.name, context = handler) {

@@ -1,10 +1,8 @@
 package com.simple.wallet.presentation.transaction.send
 
-import android.util.Log
 import android.util.Range
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.simple.core.utils.extentions.toJson
 import com.simple.core.utils.extentions.validate
 import com.simple.coreapp.ui.base.viewmodels.BaseViewModel
 import com.simple.coreapp.utils.extentions.combineSources
@@ -16,7 +14,6 @@ import com.simple.state.ResultState
 import com.simple.state.doFailed
 import com.simple.state.doSuccess
 import com.simple.state.isStart
-import com.simple.state.toFailed
 import com.simple.state.toSuccess
 import com.simple.wallet.GAS_LIMIT_DEFAULT
 import com.simple.wallet.domain.entities.Chain
@@ -37,7 +34,7 @@ abstract class TransactionViewModel : BaseViewModel() {
     private val getGasLimitAsyncUseCase: GetGasLimitAsyncUseCase by inject()
 
 
-    open val gasDefaultId: String = Gas.GAS_ID_FAST
+    open val gasDefaultId: String = Gas.GAS_ID_STANDARD
 
 
     open val nativeToken: LiveData<Token> = MediatorLiveData()
@@ -47,7 +44,10 @@ abstract class TransactionViewModel : BaseViewModel() {
     open var currentWallet: LiveData<Wallet> = MediatorLiveData()
 
 
-    val customNonce: LiveData<BigInteger> = MediatorLiveData()
+    val nonce: LiveData<BigInteger> = MediatorLiveData<BigInteger>().apply {
+
+        value = -BigInteger.ONE
+    }
 
 
     val gasListState: LiveData<ResultState<List<Gas>>> = combineSources({
@@ -108,8 +108,6 @@ abstract class TransactionViewModel : BaseViewModel() {
 
             getGasLimitAsyncUseCase.execute(it)
         }.collect { state ->
-
-            Log.d("tuanha", "gasLimitState${state.toSuccess()?.data?.toJson()}: ", state.toFailed()?.cause)
 
             state.doSuccess {
 
@@ -184,7 +182,7 @@ abstract class TransactionViewModel : BaseViewModel() {
 
         gas.postValue(gasList.getOrEmpty().find { it.isDefault } ?: return)
 
-        customNonce.postValue(null)
+        nonce.postValue(null)
     }
 
     open fun updateSettingInfo(gas: Gas?, gasLimitCustom: BigDecimal?, nonceCustom: BigInteger?) {
@@ -198,7 +196,7 @@ abstract class TransactionViewModel : BaseViewModel() {
         }
 
         if (nonceCustom != null && nonceCustom > BigInteger.ZERO) {
-            this.customNonce.postDifferentValue(nonceCustom)
+            this.nonce.postDifferentValue(nonceCustom)
         }
     }
 }

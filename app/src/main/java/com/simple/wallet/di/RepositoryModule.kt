@@ -4,16 +4,20 @@ import com.simple.core.utils.extentions.asObject
 import com.simple.wallet.data.repositories.ChainRepositoryImpl
 import com.simple.wallet.data.repositories.TokenRepositoryImpl
 import com.simple.wallet.data.repositories.TransactionRepositoryImpl
+import com.simple.wallet.data.repositories.UrlRepositoryImpl
 import com.simple.wallet.data.repositories.WalletConnectRepositoryImpl
 import com.simple.wallet.data.repositories.WalletRepositoryImpl
 import com.simple.wallet.domain.repositories.ChainRepository
 import com.simple.wallet.domain.repositories.TokenRepository
 import com.simple.wallet.domain.repositories.TransactionRepository
+import com.simple.wallet.domain.repositories.UrlRepository
 import com.simple.wallet.domain.repositories.WalletConnectRepository
 import com.simple.wallet.domain.repositories.WalletRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
+
+    single { UrlRepositoryImpl(get()).asObject<UrlRepository>() }
 
     single { WalletRepositoryImpl(get(), get(), get(), getAll()).asObject<WalletRepository>() }
 

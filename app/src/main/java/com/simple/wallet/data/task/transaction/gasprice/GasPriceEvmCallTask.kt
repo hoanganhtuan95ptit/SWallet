@@ -1,7 +1,7 @@
 package com.simple.wallet.data.task.transaction.gasprice
 
+import android.util.Log
 import com.one.web3.task.EvmCall
-import com.one.web3.utils.fromWei
 import com.simple.wallet.domain.entities.Gas
 import org.web3j.utils.Numeric
 import java.math.BigDecimal
@@ -11,69 +11,65 @@ class GasPriceEvmCallTask : GasPriceTask, EvmCall {
 
     override suspend fun executeTask(param: com.one.web3.Param): List<Gas> {
 
-        val estimatedGasPrice = call("eth_gasPrice", emptyList(), param.rpcUrls, param.sync).textValue()!!.let { Numeric.decodeQuantity(it).toBigDecimal().fromWei() }
+        val estimatedGasPrice = call("eth_gasPrice", emptyList(), param.rpcUrls, param.sync).textValue()!!.let { Numeric.decodeQuantity(it).toBigDecimal() }
 
-        val priorityFee = kotlin.runCatching { call("eth_maxPriorityFeePerGas", emptyList(), param.rpcUrls, param.sync) }.getOrNull()?.textValue()?.let { Numeric.decodeQuantity(it).toBigDecimal().fromWei() } ?: BigDecimal.ZERO
+        val priorityFee = kotlin.runCatching { call("eth_maxPriorityFeePerGas", emptyList(), param.rpcUrls, param.sync) }.getOrNull()?.textValue()?.let { Numeric.decodeQuantity(it).toBigDecimal() } ?: BigDecimal.ZERO
+
+        return estimatedGasPrice.toGas(baseFeeWei = estimatedGasPrice.minus(priorityFee), priorityFeeWei = priorityFee)
+    }
+
+    private fun BigDecimal.toGas(baseFeeWei: BigDecimal, priorityFeeWei: BigDecimal): List<Gas> {
 
 
-        val baseFee = estimatedGasPrice?.minus(priorityFee)
+        val gasPriceWeiStandard = this
+
+        val baseFeeWeiStandard = baseFeeWei
+
+        val priorityFeeWeiStandard = priorityFeeWei
 
 
-        return estimatedGasPrice.toGas(_baseFee = baseFee, _priorityFee = priorityFee)
+        val list = arrayListOf<Gas>()
+
+        Gas(
+            id = Gas.GAS_ID_SLOW,
+            baseFeeWei = baseFeeWeiStandard,
+            gasPriceWei = gasPriceWeiStandard.divide(1.2.toBigDecimal(), MathContext.DECIMAL128),
+            priorityFeeWei = priorityFeeWeiStandard.divide(1.4.toBigDecimal(), MathContext.DECIMAL128),
+        ).let {
+
+            list.add(it)
+        }
+
+        Gas(
+            id = Gas.GAS_ID_FAST,
+            baseFeeWei = baseFeeWeiStandard,
+            gasPriceWei = gasPriceWeiStandard.multiply(1.4.toBigDecimal(), MathContext.DECIMAL128),
+            priorityFeeWei = priorityFeeWeiStandard.multiply(1.3.toBigDecimal(), MathContext.DECIMAL128),
+        ).let {
+
+            list.add(it)
+        }
+
+        Gas(
+            id = Gas.GAS_ID_SUPER_FAST,
+            baseFeeWei = baseFeeWeiStandard,
+            gasPriceWei = gasPriceWeiStandard.multiply(2.8.toBigDecimal(), MathContext.DECIMAL128),
+            priorityFeeWei = priorityFeeWeiStandard.multiply(2.7.toBigDecimal(), MathContext.DECIMAL128),
+        ).let {
+
+            list.add(it)
+        }
+
+        Gas(
+            id = Gas.GAS_ID_STANDARD,
+            baseFeeWei = baseFeeWeiStandard,
+            gasPriceWei = gasPriceWeiStandard,
+            priorityFeeWei = priorityFeeWeiStandard
+        ).let {
+
+            list.add(it)
+        }
+
+        return list
     }
 }
-
-fun BigDecimal.toGas(_baseFee: BigDecimal? = null, _priorityFee: BigDecimal? = null): List<Gas> {
-
-    val gasPriceStandard = this
-
-    val baseFeeStandard = _baseFee ?: gasPriceStandard
-
-    val priorityFeeStandard = _priorityFee ?: BigDecimal.ZERO
-
-    val list = arrayListOf<Gas>()
-
-    Gas(
-        id = Gas.GAS_ID_SLOW,
-        baseFee = baseFeeStandard.toPlainString(),
-        gasPrice = gasPriceStandard.divide(1.2.toBigDecimal(), MathContext.DECIMAL128).toPlainString(),
-        priorityFee = priorityFeeStandard.divide(1.4.toBigDecimal(), MathContext.DECIMAL128).toPlainString(),
-    ).let {
-
-        list.add(it)
-    }
-
-    Gas(
-        id = Gas.GAS_ID_FAST,
-        baseFee = baseFeeStandard.toPlainString(),
-        gasPrice = gasPriceStandard.multiply(1.4.toBigDecimal(), MathContext.DECIMAL128).toPlainString(),
-        priorityFee = priorityFeeStandard.multiply(1.3.toBigDecimal(), MathContext.DECIMAL128).toPlainString(),
-        isDefault = true
-    ).let {
-
-        list.add(it)
-    }
-
-    Gas(
-        id = Gas.GAS_ID_SUPER_FAST,
-        baseFee = baseFeeStandard.toPlainString(),
-        gasPrice = gasPriceStandard.multiply(2.8.toBigDecimal(), MathContext.DECIMAL128).toPlainString(), // gasPriceFast*2
-        priorityFee = priorityFeeStandard.multiply(2.7.toBigDecimal(), MathContext.DECIMAL128).toPlainString(),// priorityFeeFast*2
-    ).let {
-
-        list.add(it)
-    }
-
-    Gas(
-        id = Gas.GAS_ID_STANDARD,
-        baseFee = baseFeeStandard.toPlainString(),
-        gasPrice = gasPriceStandard.toPlainString(),
-        priorityFee = priorityFeeStandard.toPlainString()
-    ).let {
-
-        list.add(it)
-    }
-
-    return list
-}
-
