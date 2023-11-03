@@ -28,7 +28,8 @@ data class Chain(
     }
 
     enum class Config(val value: String) {
-        EIP_1559("EIP_1559")
+        EIP_1559("EIP_1559"),
+        IS_TESTNET("IS_TESTNET"),
     }
 
     data class Rpc(
@@ -69,6 +70,10 @@ data class Chain(
 
 
         fun String.toChainType() = Chain.Type.values().find { this.equals(it.value, true) } ?: error("not support $this")
+
+        fun String.toChainConfig() = Chain.Config.values().first { this.equals(it.value, true) }
+
+        fun String.toChainConfigOrNull() = Chain.Config.values().firstOrNull { this.equals(it.value, true) }
 
 
         fun String.fromNamespace() = if (this == "eip155") {

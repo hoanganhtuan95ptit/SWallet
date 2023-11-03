@@ -211,9 +211,9 @@ class SignMessageConfirmViewModel(
     internal val signMessageState: LiveData<ResultState<String>> = MediatorLiveData()
 
 
-    internal val buttonState: LiveData<Enum<*>> = listenerSources(currentWallet, requestDetectState) {
+    internal val buttonState: LiveData<Enum<*>> = listenerSources(currentWallet, requestDetectState, signMessageState) {
 
-        (if ( requestDetectState.value.isStart()) {
+        (if (requestDetectState.value.isStart()) {
 
             ButtonState.DETECT_LOADING
         } else if (requestDetectState.value.isFailed()) {

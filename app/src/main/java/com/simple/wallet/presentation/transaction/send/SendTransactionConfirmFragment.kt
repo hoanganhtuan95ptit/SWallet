@@ -247,7 +247,7 @@ class SendTransactionConfirmFragment : BaseViewModelSheetFragment<PopupListBindi
 
             bindingAction.root.postAwait()
 
-            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(500)) {
+            if (state != ButtonState.DETECT_LOADING) bindingAction.root.beginTransitionAwait(AutoTransition().setDuration(350)) {
 
                 bindButtonState(state)
             } else {

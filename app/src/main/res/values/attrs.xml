@@ -8,7 +8,10 @@
     <attr name="colorWarning10" format="color" />
 
     <attr name="colorError10" format="color" />
+
     <attr name="colorAccent10" format="color" />
+
+    <attr name="colorOnBackground10" format="color" />
 
     <attr name="colorOnBackgroundTertiary" format="color" />
 

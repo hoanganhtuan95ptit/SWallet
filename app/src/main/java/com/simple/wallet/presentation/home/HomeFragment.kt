@@ -21,8 +21,9 @@ import com.simple.navigation.utils.ext.setNavigationResultListener
 import com.simple.wallet.DATA
 import com.simple.wallet.DP_8
 import com.simple.wallet.PARAM_ACTION
-import com.simple.wallet.PAYLOAD_PAIR
-import com.simple.wallet.PAYLOAD_SLIDE
+import com.simple.wallet.PARAM_PAIR
+import com.simple.wallet.PARAM_SCAN
+import com.simple.wallet.PARAM_SLIDE
 import com.simple.wallet.R
 import com.simple.wallet.databinding.FragmentHomeBinding
 import com.simple.wallet.domain.entities.Chain
@@ -61,7 +62,10 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
             binding.swipeRefreshLayout.isEnabled = (verticalOffset == 0)
         }
 
-        val adapter = CategoryAdapter()
+        val adapter = CategoryAdapter { view, item ->
+
+            offerDeepLink(item.data.deeplink)
+        }
 
         categoryAdapter = MultiAdapter(adapter).apply {
 
@@ -114,9 +118,22 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
 
             val data = result.getSerializableOrNull<ScanData>(DATA) ?: return@setNavigationResultListener
 
-            if (data.outputType == CameraOutputType.WALLET_CONNECT) {
+            when (data.outputType) {
 
-                offerDeepLink("/wallet-connect?$PAYLOAD_PAIR=${data.text.encodeUrl()}&$PAYLOAD_SLIDE=${Request.Slide.ANOTHER_DEVICE.value}")
+                CameraOutputType.WALLET_CONNECT -> {
+
+                    offerDeepLink("/wallet-connect?$PARAM_PAIR=${data.text.encodeUrl()}&$PARAM_SLIDE=${Request.Slide.ANOTHER_DEVICE.value}")
+                }
+
+                in listOf(CameraOutputType.PRIVATE_KEY, CameraOutputType.SEED_PHRASE, CameraOutputType.WALLET_ADDRESS) -> {
+
+                    offerDeepLink("/import-wallet?$PARAM_SCAN=${data.text}")
+                }
+
+                in listOf(CameraOutputType.LINK) -> {
+
+                    offerDeepLink(data.text)
+                }
             }
         }
 
@@ -125,6 +142,10 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
             offerDeepLink("/camera?$KEY_REQUEST=$keyRequestScan&$PARAM_ACTION=scan")
         }
 
+        binding.ivSearch.setDebouncedClickListener {
+
+            offerDeepLink("/search")
+        }
 
         binding.ivAddWallet.setDebouncedClickListener {
 

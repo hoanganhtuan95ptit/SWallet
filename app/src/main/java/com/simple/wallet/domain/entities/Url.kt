@@ -7,6 +7,8 @@ data class Url(
 
     var image: String = "",
 
+    var description: String = "",
+
     var tag: Tag = Tag.UNKNOWN
 ) {
 

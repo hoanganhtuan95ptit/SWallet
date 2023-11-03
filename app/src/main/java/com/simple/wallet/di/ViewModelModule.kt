@@ -1,11 +1,13 @@
 package com.simple.wallet.di
 
-import com.simple.wallet.MainViewModel
 import com.simple.wallet.domain.entities.Request
+import com.simple.wallet.presentation.MainViewModel
+import com.simple.wallet.presentation.browser.BrowserViewModel
 import com.simple.wallet.presentation.camera.CameraViewModel
 import com.simple.wallet.presentation.chain.SelectChainViewModel
 import com.simple.wallet.presentation.home.HomeViewModel
 import com.simple.wallet.presentation.message.sign.SignMessageConfirmViewModel
+import com.simple.wallet.presentation.search.SearchViewModel
 import com.simple.wallet.presentation.transaction.send.SendTransactionConfirmViewModel
 import com.simple.wallet.presentation.wallet.add.AddWalletViewModel
 import com.simple.wallet.presentation.wallet.add.create.CreateWalletViewModel
@@ -26,6 +28,14 @@ val viewModelModule = module {
 
     viewModel {
         HomeViewModel()
+    }
+
+    viewModel {
+        SearchViewModel(get())
+    }
+
+    viewModel {
+        BrowserViewModel()
     }
 
     viewModel {

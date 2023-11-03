@@ -1,9 +1,11 @@
 package com.simple.wallet.di
 
 import com.simple.navigation.NavigationProvider
+import com.simple.wallet.presentation.browser.BrowserProvider
 import com.simple.wallet.presentation.camera.CameraProvider
 import com.simple.wallet.presentation.chain.SelectChainProvider
 import com.simple.wallet.presentation.message.sign.SignMessageConfirmProvider
+import com.simple.wallet.presentation.search.SearchProvider
 import com.simple.wallet.presentation.wallet.add.AddWalletProvider
 import com.simple.wallet.presentation.wallet.add.confirm.ConfirmWalletProvider
 import com.simple.wallet.presentation.wallet.add.create.CreateWalletProvider
@@ -34,6 +36,10 @@ val navigationModule = module {
 
     single { ApproveConnectProvider() } bind NavigationProvider::class
 
+
+    single { SearchProvider() } bind NavigationProvider::class
+
+    single { BrowserProvider() } bind NavigationProvider::class
 
     single { SignMessageConfirmProvider() } bind NavigationProvider::class
 }

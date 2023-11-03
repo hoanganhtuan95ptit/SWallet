@@ -5,15 +5,16 @@ import com.simple.analytics.Analytics
 import com.simple.crashlytics.Crashlytics
 import com.simple.wallet.data.task.CameraActionScanTask
 import com.simple.wallet.data.task.CameraInfoScanTask
+import com.simple.wallet.data.task.LinkCameraDetectTask
 import com.simple.wallet.data.task.OutputTypeScanTask
-import com.simple.wallet.data.task.SeedPhraseDetectTask
-import com.simple.wallet.data.task.WalletConnectDetectTask
+import com.simple.wallet.data.task.SeedPhraseCameraDetectTask
+import com.simple.wallet.data.task.WalletConnectCameraDetectTask
 import com.simple.wallet.data.task.chain.ChainSyncTask
 import com.simple.wallet.data.task.chain.DefaultChainSyncTask
 import com.simple.wallet.data.task.chaintype.SeedPhraseWalletTypeDetectTask
-import com.simple.wallet.data.task.chaintype.evm.EvmAddressDetectTask
+import com.simple.wallet.data.task.chaintype.evm.EvmAddressCameraDetectTask
 import com.simple.wallet.data.task.chaintype.evm.EvmGenerateAddressTask
-import com.simple.wallet.data.task.chaintype.evm.EvmPrivateKeyDetectTask
+import com.simple.wallet.data.task.chaintype.evm.EvmPrivateKeyCameraDetectTask
 import com.simple.wallet.data.task.chaintype.evm.EvmWalletTypeDetectTask
 import com.simple.wallet.data.task.crashlytics.LogAnalytics
 import com.simple.wallet.data.task.crashlytics.LogCrashlytics
@@ -25,6 +26,8 @@ import com.simple.wallet.data.task.sign.SignPersonalMessageEvmTask
 import com.simple.wallet.data.task.sign.SignTask
 import com.simple.wallet.data.task.transaction.gasprice.GasPriceEvmCallTask
 import com.simple.wallet.data.task.transaction.gasprice.GasPriceTask
+import com.simple.wallet.data.task.url.DefaultUrlSyncTask
+import com.simple.wallet.data.task.url.UrlSyncTask
 import com.simple.wallet.data.task.wallet.PrivateKeyTaskImpl
 import com.simple.wallet.domain.tasks.CameraActionTask
 import com.simple.wallet.domain.tasks.CameraDetectTask
@@ -51,13 +54,15 @@ val taskModule = module {
     single { OutputTypeScanTask() } bind OutputTypeTask::class
 
 
-    single { EvmAddressDetectTask() } bind CameraDetectTask::class
+    single { LinkCameraDetectTask() } bind CameraDetectTask::class
 
-    single { SeedPhraseDetectTask() } bind CameraDetectTask::class
+    single { EvmAddressCameraDetectTask() } bind CameraDetectTask::class
 
-    single { EvmPrivateKeyDetectTask() } bind CameraDetectTask::class
+    single { SeedPhraseCameraDetectTask() } bind CameraDetectTask::class
 
-    single { WalletConnectDetectTask() } bind CameraDetectTask::class
+    single { EvmPrivateKeyCameraDetectTask() } bind CameraDetectTask::class
+
+    single { WalletConnectCameraDetectTask() } bind CameraDetectTask::class
 
 
     single { EvmGenerateAddressTask() } bind GenerateAddressTask::class
@@ -87,6 +92,8 @@ val taskModule = module {
 //
 //    single { TransferErc20TransactionDecodeTask(get(), get(), get(), getAll(), getAll()) } bind RequestDecodeTask::class
 
+
+    single { DefaultUrlSyncTask(get(), get(), get()) } bind UrlSyncTask::class
 
     single { DefaultChainSyncTask(get(), get(), get(), get(), get(), get()) } bind ChainSyncTask::class
 

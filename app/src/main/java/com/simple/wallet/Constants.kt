@@ -9,11 +9,14 @@ val LOGO_APP by lazy { "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2
 val DATA by lazy { "DATA" }
 val DATA_STATE by lazy { "DATA_STATE" }
 
-val PARAM_DATA by lazy { "PARAM_DATA" }
+val KEY_REQUEST by lazy { "KEY_REQUEST" }
 
+val PARAM_URL by lazy { "PARAM_URL" }
+val PARAM_SCAN by lazy { "PARAM_SCAN" }
+val PARAM_DATA by lazy { "PARAM_DATA" }
+val PARAM_PAIR by lazy { "PARAM_PAIR" }
+val PARAM_SLIDE by lazy { "PARAM_SLIDE" }
 val PARAM_ACTION by lazy { "PARAM_ACTION" }
-val PAYLOAD_PAIR by lazy { "PAYLOAD_PAIR" }
-val PAYLOAD_SLIDE by lazy { "PAYLOAD_SLIDE" }
 val PARAM_RESULT_STATUS by lazy { "PARAM_RESULT_STATUS" }
 
 

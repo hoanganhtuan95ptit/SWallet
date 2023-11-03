@@ -17,7 +17,7 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single { UrlRepositoryImpl(get()).asObject<UrlRepository>() }
+    single { UrlRepositoryImpl(get(), getAll()).asObject<UrlRepository>() }
 
     single { WalletRepositoryImpl(get(), get(), get(), getAll()).asObject<WalletRepository>() }
 

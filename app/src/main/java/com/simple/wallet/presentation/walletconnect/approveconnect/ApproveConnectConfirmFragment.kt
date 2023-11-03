@@ -33,6 +33,7 @@ import com.simple.coreapp.utils.extentions.setDebouncedClickListener
 import com.simple.coreapp.utils.extentions.setVisible
 import com.simple.coreapp.utils.extentions.submitListAwait
 import com.simple.coreapp.utils.extentions.vibrate
+import com.simple.navigation.ChildNavigation
 import com.simple.navigation.NavigationProvider
 import com.simple.navigation.utils.ext.offerDeepLink
 import com.simple.navigation.utils.ext.setNavigationResultListener
@@ -41,8 +42,8 @@ import com.simple.state.isStart
 import com.simple.state.isSuccess
 import com.simple.wallet.DATA
 import com.simple.wallet.DP_32
-import com.simple.wallet.PAYLOAD_PAIR
-import com.simple.wallet.PAYLOAD_SLIDE
+import com.simple.wallet.PARAM_PAIR
+import com.simple.wallet.PARAM_SLIDE
 import com.simple.wallet.R
 import com.simple.wallet.databinding.LayoutActionConfirmBinding
 import com.simple.wallet.databinding.PopupListBinding
@@ -62,17 +63,17 @@ import com.simple.wallet.utils.exts.decodeUrl
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.parameter.parametersOf
 
-internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, ApproveConnectConfirmViewModel>() {
+internal class ApprovalConnectConfirmFragment : BaseViewModelSheetFragment<PopupListBinding, ApproveConnectConfirmViewModel>(), ChildNavigation {
 
 
     private val pair: String? by lazy {
 
-        arguments?.getString(PAYLOAD_PAIR)
+        arguments?.getString(PARAM_PAIR)
     }
 
     private val slide: Request.Slide? by lazy {
 
-        arguments?.getString(PAYLOAD_SLIDE)?.toRequestSlide()
+        arguments?.getString(PARAM_SLIDE)?.toRequestSlide()
     }
 
 

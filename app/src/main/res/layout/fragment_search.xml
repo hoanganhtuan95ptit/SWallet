@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorOnBackground10"
+    android:theme="@style/Popup">
+
+    <View
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/colorBackground"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/v_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="?android:attr/colorBackground"
+        app:layout_constraintTop_toBottomOf="@id/status" />
+
+    <EditText
+        android:id="@+id/edt_search"
+        style="?attr/textBody2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/bg_corners_150dp_solid_color_background_stroke_1dp_on_background_tertiary"
+        android:gravity="center_vertical"
+        android:hint="@string/hint_search"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingHorizontal="16dp"
+        android:selectAllOnFocus="true"
+        android:textColor="?attr/colorOnBackground"
+        android:textColorHint="?attr/colorOnBackgroundVariant"
+        app:layout_constraintBottom_toBottomOf="@id/v_header"
+        app:layout_constraintTop_toTopOf="@id/v_header" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_header" />
+</androidx.constraintlayout.widget.ConstraintLayout>

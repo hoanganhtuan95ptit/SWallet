@@ -30,10 +30,10 @@ class HomeViewModel : BaseViewModel() {
 
         val list = arrayListOf<Category>()
 
-        list.add(Category(id = Category.Id.TRANSFER.value, deeplink = ""))
-        list.add(Category(id = Category.Id.D_APP.value, deeplink = ""))
-        list.add(Category(id = Category.Id.SWAP.value, deeplink = ""))
-        list.add(Category(id = Category.Id.CROSS_SWAP.value, deeplink = ""))
+        list.add(Category(id = Category.Id.TRANSFER.value, deeplink = "https://wallet.krystal.app/send"))
+        list.add(Category(id = Category.Id.D_APP.value, deeplink = "https://www.google.com/"))
+        list.add(Category(id = Category.Id.SWAP.value, deeplink = "https://app.uniswap.org/swap"))
+        list.add(Category(id = Category.Id.CROSS_SWAP.value, deeplink = "https://wallet.krystal.app/cross-chain-swap"))
 
         postDifferentValue(list)
     }
@@ -51,14 +51,14 @@ class HomeViewModel : BaseViewModel() {
 
     fun updateChain(data: Chain) {
 
-        chain.postDifferentValue(data){old, new ->
+        chain.postDifferentValue(data) { old, new ->
             old?.id == new.id
         }
     }
 
     fun updateWallet(data: Wallet) {
 
-        wallet.postDifferentValue(data){old, new ->
+        wallet.postDifferentValue(data) { old, new ->
             old?.id == new.id
         }
     }

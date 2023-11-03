@@ -1,5 +1,6 @@
 package com.simple.wallet.presentation.home.adapters
 
+import android.view.View
 import com.simple.adapter.ViewItemAdapter
 import com.simple.adapter.ViewItemCloneable
 import com.simple.coreapp.utils.extentions.emptyImage
@@ -15,7 +16,7 @@ import com.simple.wallet.databinding.ItemCategoryBinding
 import com.simple.wallet.domain.entities.Category
 import java.util.UUID
 
-class CategoryAdapter : ViewItemAdapter<CategoryViewItem, ItemCategoryBinding>() {
+class CategoryAdapter(onItemClick: (View, CategoryViewItem) -> Unit = { _, _ -> }) : ViewItemAdapter<CategoryViewItem, ItemCategoryBinding>(onItemClick) {
 
     override fun bind(binding: ItemCategoryBinding, viewType: Int, position: Int, item: CategoryViewItem, payloads: MutableList<Any>) {
         super.bind(binding, viewType, position, item, payloads)

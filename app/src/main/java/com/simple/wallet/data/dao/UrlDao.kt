@@ -9,9 +9,15 @@ private const val TABLE_NAME = "urls"
 @Dao
 interface UrlDao {
 
+    fun query(query: String): List<Url> = queryRoomList(query).toEntity()
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE url COLLATE NOCASE LIKE '%' || :query || '%' OR name COLLATE NOCASE LIKE '%' || :query || '%'")
+    fun queryRoomList(query: String): List<RoomUrl>
+
+
     fun findListBy(url: String): List<Url> = getRoomListBy(url).toEntity()
 
-    @Query("SELECT * from $TABLE_NAME WHERE url = :url")
+    @Query("SELECT * FROM $TABLE_NAME WHERE url = :url")
     fun getRoomListBy(url: String): List<RoomUrl>
 
 
@@ -34,6 +40,8 @@ data class RoomUrl(
 
     var image: String = "",
 
+    var description: String = "",
+
     var tag: String = ""
 )
 
@@ -50,6 +58,8 @@ private fun Url.toRoom(): RoomUrl {
         name = name,
 
         image = image,
+
+        description = description,
 
         tag = tag.value
     )
@@ -68,6 +78,8 @@ private fun RoomUrl.toEntity(): Url {
         name = name,
 
         image = image,
+
+        description = description,
 
         tag = tag.toUrlTag()
     )

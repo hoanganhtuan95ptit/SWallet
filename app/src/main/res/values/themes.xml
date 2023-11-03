@@ -95,6 +95,8 @@
         <item name="colorAccent10">#1037aa5f</item>
         <item name="colorOnAccent">#FFFFFF</item>
 
+        <item name="colorOnBackground10">#90000000</item>
+
         <item name="colorDivider">#50111111</item>
     </style>
 
@@ -116,6 +118,11 @@
     <style name="Camera" parent="Theme.SWallet">
 
         <item name="colorOnBackground">#FFFFFF</item>
+    </style>
+
+    <style name="DialogTheme" parent="Popup">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="ScanTabItemTextAppearance" parent="TextAppearance.Design.Tab">

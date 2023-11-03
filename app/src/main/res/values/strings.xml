@@ -109,7 +109,9 @@
     <string name="formula_gas_limit">(Gas Limit)</string>
     <string name="formula_gas_price">(Gas Price)</string>
     <string name="formula_max_gas">(Max Gas)</string>
-    <string name="gas_formula" translatable="false" formatted="false">%s %s * %s %s</string>
+    <string name="gas_formula" formatted="false" translatable="false">%s %s * %s %s</string>
     <string name="transaction_estimate_formula" translatable="false">≈ %s\n</string>
+
+    <string name="hint_search">Search…</string>
 
 </resources>

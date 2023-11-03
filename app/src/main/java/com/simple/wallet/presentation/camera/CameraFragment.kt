@@ -1,8 +1,10 @@
 package com.simple.wallet.presentation.camera
 
 import android.Manifest
+import android.os.Bundle
 import android.util.Size
 import android.view.Surface.ROTATION_0
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -78,8 +80,8 @@ internal class CameraFragment : BaseViewModelFragment<FragmentCameraBinding, Cam
     private var actionAdapter by autoCleared<MultiAdapter>()
 
 
-    override fun onViewReady() {
-        super.onViewReady()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupBack()
         setupInfo()

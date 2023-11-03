@@ -273,19 +273,19 @@ internal class ApproveConnectConfirmViewModel(
 
     internal val buttonState: LiveData<Enum<*>> = listenerSources(currentWallet, requestDetectState, rejectConnectState, approveConnectState) {
 
-        (if (requestDetectState.value?.isStart() == true) {
+        (if (requestDetectState.value.isStart()) {
 
             ButtonState.DETECT_LOADING
-        } else if (requestDetectState.value?.isFailed() == true) {
+        } else if (requestDetectState.value.isFailed()) {
 
             ButtonState.DETECT_FAILED
-        } else if (currentWallet.get().isWatch) {
+        } else if (currentWallet.value?.isWatch == true) {
 
             ButtonState.WATCH_WALLET
-        } else if (rejectConnectState.value?.isStart() == true) {
+        } else if (rejectConnectState.value.isStart()) {
 
             ButtonState.REJECT_LOADING
-        } else if (approveConnectState.value?.isStart() == true) {
+        } else if (approveConnectState.value.isStart()) {
 
             ButtonState.APPROVE_LOADING
         } else {

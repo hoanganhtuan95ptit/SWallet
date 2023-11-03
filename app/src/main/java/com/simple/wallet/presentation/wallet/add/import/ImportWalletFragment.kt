@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -39,6 +39,7 @@ import com.simple.wallet.DATA
 import com.simple.wallet.DP_24
 import com.simple.wallet.DP_32
 import com.simple.wallet.PARAM_ACTION
+import com.simple.wallet.PARAM_SCAN
 import com.simple.wallet.R
 import com.simple.wallet.databinding.FragmentImportWalletBinding
 import com.simple.wallet.domain.entities.scan.ScanData
@@ -49,7 +50,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
 
     private val scanString: String? by lazy {
-        arguments?.getString(SCAN_STRING)
+        arguments?.getString(PARAM_SCAN)
     }
 
 
@@ -89,10 +90,6 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
             binding.ivBack.updateMargin(top = heightStatusBar)
             binding.tvContinue.updateMargin(bottom = heightNavigationBar + DP_32)
         }
-    }
-
-    override fun onViewReady() {
-        super.onViewReady()
 
         setupUI()
 
@@ -142,7 +139,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
         binding.tvContinue.setDebouncedClickListener(anim = true) {
 
-            addWalletViewModel.importWallet("wallet 1", binding.edtKey.text.toString(), viewModel.walletType.get().toSuccess()!!.data)
+            addWalletViewModel.importWallet(binding.edtName.text?.toString() ?: "Wallet 1", binding.edtKey.text.toString(), viewModel.walletType.get().toSuccess()!!.data)
 
             dismiss()
 
@@ -152,12 +149,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
         setNavigationResultListener(REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET) { _, b ->
 
-            Log.d("tuanha", "setupUI: ")
-            val result: ScanData = b.getSerializableOrNull<ScanData>(DATA)?.apply {
-
-            } ?: return@setNavigationResultListener
-
-            Log.d("tuanha", "setupUI: ${result.text}")
+            val result: ScanData = b.getSerializableOrNull<ScanData>(DATA) ?: return@setNavigationResultListener
 
             binding.edtKey.setText(result.text)
         }
@@ -200,20 +192,7 @@ class ImportWalletFragment : BaseViewModelFragment<FragmentImportWalletBinding, 
 
     companion object {
 
-        const val SCAN_STRING = "SCAN_STRING"
-
-        const val REQUEST_CONFIRM_WALLET = "REQUEST_CONFIRM_WALLET"
-
         const val REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET = "REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET"
-
-        fun newInstance(scanString: String = "", requestKey: String? = ""): ImportWalletFragment = ImportWalletFragment().apply {
-
-            arguments = Bundle().apply {
-
-                putString(SCAN_STRING, scanString)
-                putString(KEY_REQUEST, requestKey)
-            }
-        }
     }
 }
 
@@ -231,6 +210,9 @@ class ImportWalletProvider : NavigationProvider {
 
     override fun provideFragment(deepLink: String, params: Map<String, String>): Fragment {
 
-        return ImportWalletFragment.newInstance()
+        return ImportWalletFragment().apply {
+
+            arguments = bundleOf(*params.toList().toTypedArray())
+        }
     }
 }

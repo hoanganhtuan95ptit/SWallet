@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
 
+    implementation("androidx.webkit:webkit:1.8.0")
 
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -79,6 +80,7 @@ dependencies {
 
     implementation("androidx.room:room-ktx:2.6.0")
     implementation("androidx.room:room-runtime:2.6.0")
+    implementation("androidx.palette:palette-ktx:1.0.0")
     kapt("androidx.room:room-compiler:2.6.0")
 
     implementation(platform("com.walletconnect:android-bom:1.18.0"))
@@ -102,7 +104,7 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.4.0-alpha02")
     implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0")
 
-    implementation ("com.google.crypto.tink:tink-android:1.8.0")
+    implementation("com.google.crypto.tink:tink-android:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
 

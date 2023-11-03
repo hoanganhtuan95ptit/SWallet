@@ -11,6 +11,7 @@ import com.simple.wallet.data.dao.chain.RpcChainDao
 import com.simple.wallet.data.dao.chain.SmartContractDao
 import com.simple.wallet.data.dao.token.TokenDao
 import com.simple.wallet.domain.entities.Chain
+import com.simple.wallet.domain.entities.Chain.Companion.toChainConfigOrNull
 import com.simple.wallet.domain.entities.Chain.Companion.toChainType
 import com.simple.wallet.domain.entities.Token
 import com.simple.wallet.domain.entities.Token.Companion.TOKEN_NATIVE_ADDRESS_DEFAULT
@@ -32,13 +33,13 @@ class DefaultChainSyncTask(
 
     override suspend fun executeTask(param: Unit) {
 
-        val versionCachePhonetics = appCache.getVersionCachePhonetics()
+        val versionCache = appCache.getLong(DEFAULT_CHAIN_SYNC_TASK) ?: 0
 
-//        if (version <= versionCachePhonetics) return
+        if (version <= versionCache) return
 
         var chainRepositoryList = readTextFile(context.resources.openRawResource(R.raw.chain)).toListOrEmpty<ChainResponse>().apply {
 
-            appCache.saveVersionCachePhonetics(version)
+            appCache.putLong(DEFAULT_CHAIN_SYNC_TASK, version)
         }
 
 
@@ -77,6 +78,13 @@ class DefaultChainSyncTask(
                 )
             }
 
+            val config = chain.configs.mapNotNull {
+
+                val chainConfig = it.name.toChainConfigOrNull() ?: return@mapNotNull null
+
+                Pair(chainConfig, it.value)
+            }.toMap()
+
 
             Chain(
                 id = chain.id,
@@ -85,7 +93,9 @@ class DefaultChainSyncTask(
 
                 type = chain.type.toChainType(),
 
-                explorer = explorer,
+                config = config,
+
+                explorer = explorer
             ).let {
 
                 chainList.add(it)
@@ -225,12 +235,17 @@ class DefaultChainSyncTask(
         var address: String = "",
         var type: String = ""
     )
-}
 
-private val RPC by lazy {
-    "RPC"
-}
+    companion object {
 
-private val BLOCK_EXPLORER by lazy {
-    "BLOCK_EXPLORER_URL"
+        private val RPC by lazy {
+            "RPC"
+        }
+
+        private val BLOCK_EXPLORER by lazy {
+            "BLOCK_EXPLORER_URL"
+        }
+
+        private const val DEFAULT_CHAIN_SYNC_TASK = "DEFAULT_CHAIN_SYNC_TASK"
+    }
 }

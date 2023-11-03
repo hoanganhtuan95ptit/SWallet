@@ -12,6 +12,7 @@ import com.simple.wallet.domain.usecases.token.GetTokenByUseCase
 import com.simple.wallet.domain.usecases.transaction.GetGasAsyncUseCase
 import com.simple.wallet.domain.usecases.transaction.GetGasLimitAsyncUseCase
 import com.simple.wallet.domain.usecases.transaction.SendTransactionUseCase
+import com.simple.wallet.domain.usecases.url.QueryUseCase
 import com.simple.wallet.domain.usecases.wallet.CreateWalletUseCase
 import com.simple.wallet.domain.usecases.wallet.GetAllWalletUseCase
 import com.simple.wallet.domain.usecases.wallet.GetWalletByUseCase
@@ -29,7 +30,7 @@ import org.koin.dsl.module
 
 val useCaseModule = module {
 
-    single { SyncUseCase(get()) }
+    single { SyncUseCase(get(), get()) }
 
 
     single { CameraDetectUseCase(getAll(), getAll()) }
@@ -74,6 +75,9 @@ val useCaseModule = module {
     single { SignMessageUseCase(get()) }
 
     single { SendTransactionUseCase(get(), get()) }
+
+
+    single { QueryUseCase(get()) }
 
 
     single { GetChainByUseCase(get()) }
