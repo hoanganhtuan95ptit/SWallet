@@ -4,21 +4,23 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import com.simple.adapter.MultiAdapter
+import com.simple.coreapp.ui.base.adapters.PagerAdapter
 import com.simple.coreapp.ui.base.fragments.BaseViewModelFragment
 import com.simple.coreapp.ui.dialogs.OptionFragment.Companion.KEY_REQUEST
 import com.simple.coreapp.utils.autoCleared
 import com.simple.coreapp.utils.ext.getSerializableOrNull
 import com.simple.coreapp.utils.extentions.doOnHeightStatusChange
+import com.simple.coreapp.utils.extentions.resize
 import com.simple.coreapp.utils.extentions.setDebouncedClickListener
 import com.simple.coreapp.utils.extentions.setImage
 import com.simple.coreapp.utils.extentions.setText
 import com.simple.coreapp.utils.extentions.text.TextImage
 import com.simple.coreapp.utils.extentions.toImage
 import com.simple.coreapp.utils.extentions.toText
-import com.simple.coreapp.utils.extentions.updateMargin
 import com.simple.navigation.utils.ext.offerDeepLink
 import com.simple.navigation.utils.ext.setNavigationResultListener
 import com.simple.wallet.DATA
+import com.simple.wallet.DP_56
 import com.simple.wallet.DP_8
 import com.simple.wallet.PARAM_ACTION
 import com.simple.wallet.PARAM_PAIR
@@ -32,6 +34,7 @@ import com.simple.wallet.domain.entities.Wallet
 import com.simple.wallet.domain.entities.scan.CameraOutputType
 import com.simple.wallet.domain.entities.scan.ScanData
 import com.simple.wallet.presentation.home.adapters.CategoryAdapter
+import com.simple.wallet.presentation.home.asset.token.TokenAssetFragment
 import com.simple.wallet.utils.exts.encodeUrl
 import com.simple.wallet.utils.exts.imageDisplay
 import com.simple.wallet.utils.exts.nameDisplay
@@ -49,6 +52,7 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
 
         setupCategory()
         setupStatusBar()
+        setupViewPager()
 
         observeData()
     }
@@ -71,14 +75,11 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
 
             setRecyclerView(binding.recyclerView, GridLayoutManager(requireContext(), 4))
         }
-
     }
 
     private fun setupStatusBar() {
 
         val binding = binding ?: return
-
-        binding.ivCurrency.setImage(R.drawable.img_bitcoin_2.toImage(), SketchFilterTransformation())
 
         binding.ivBackground.setImage(R.drawable.img_activity.toImage(), BlurTransformation(25, 3))
 
@@ -154,8 +155,22 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
 
         doOnHeightStatusChange {
 
-            binding.vHeader.updateMargin(top = it)
+            binding.vHeader.resize(height = DP_56 + it)
         }
+    }
+
+    private fun setupViewPager() {
+
+        val binding = binding ?: return
+
+        val adapter = PagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, listOf(""), {
+            ""
+        }, {
+            TokenAssetFragment.newInstance()
+        })
+
+        binding.viewPager.adapter = adapter
+        binding.viewPager.offscreenPageLimit = adapter.itemCount
     }
 
     private fun observeData() = with(viewModel) {
@@ -176,6 +191,21 @@ class HomeFragment : BaseViewModelFragment<FragmentHomeBinding, HomeViewModel>()
             binding.tvWallet.setText(listOf(it.nameDisplay, "  ".toText(), TextImage(R.drawable.img_down_on_background_24dp, DP_8), " ".toText()).toText(""))
 
             binding.ivWallet.setImage(it.imageDisplay)
+        }
+
+        currency.observe(viewLifecycleOwner){
+
+            val binding = binding ?: return@observe
+
+            binding.tvCurrency.setText(it.name)
+            binding.ivCurrency.setImage(it.logo, SketchFilterTransformation())
+        }
+
+        assetTotal.observe(viewLifecycleOwner){
+
+            val binding = binding?: return@observe
+
+            binding.tvPortfolioValue.setText(it)
         }
 
         categoryViewItemList.observe(viewLifecycleOwner) {

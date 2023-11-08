@@ -56,7 +56,7 @@ import com.simple.wallet.presentation.adapters.MessageViewItem
 import com.simple.wallet.presentation.adapters.TokenApproveViewItem
 import com.simple.wallet.presentation.transaction.send.adapter.FeeTransactionInfoViewItem
 import com.simple.wallet.utils.exts.FormatNumberType
-import com.simple.wallet.utils.exts.divideToPowerTen
+import com.simple.wallet.utils.exts.decimal
 import com.simple.wallet.utils.exts.shortenValue
 import com.simple.wallet.utils.exts.takeIfNotEmpty
 import com.simple.wallet.utils.exts.toDisplay
@@ -352,7 +352,7 @@ class SendTransactionConfirmViewModel(
             val keyValue = R.string.title_amount_transfer.toText()
 
             val valueValue = listOf(
-                listOf("-".toText(), extra.amountTransfer.toBigDecimal().divideToPowerTen(extra.tokenTransfer.decimals).toDisplay(FormatNumberType.BALANCE)).toText(" "),
+                listOf("-".toText(), extra.amountTransfer.decimal(extra.tokenTransfer.decimals).toDisplay(FormatNumberType.BALANCE)).toText(" "),
                 extra.tokenTransfer.symbol.uppercase().toText()
             ).toText(" ").withStyle(Typeface.BOLD)
 
@@ -381,7 +381,7 @@ class SendTransactionConfirmViewModel(
             val keyValue = R.string.title_value.toText()
 
             val valueValue = listOf(
-                listOf("-".toText(), value.toBigDecimal().divideToPowerTen(nativeToken.decimals).toDisplay(FormatNumberType.BALANCE)).toText(" "),
+                listOf("-".toText(), value.decimal(nativeToken.decimals).toDisplay(FormatNumberType.BALANCE)).toText(" "),
                 nativeToken.symbol.uppercase().toText()
             ).toText(" ").withStyle(Typeface.BOLD)
 

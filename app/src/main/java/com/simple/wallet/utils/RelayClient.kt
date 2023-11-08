@@ -48,13 +48,9 @@ class RelayClient(private val koinApp: KoinApplication = wcKoinApp) : BaseRelayC
 
     private fun collectConnectionErrors(onError: (Throwable) -> Unit) {
 
-        Log.d("tuanha", "collectConnectionErrors: ")
         eventsFlow
             .onEach { event: Relay.Model.Event ->
                 logger.log("$event")
-
-                Log.d("tuanha", "collectConnectionErrors: ${event.javaClass.simpleName}")
-
                 setIsWSSConnectionOpened(event)
             }
             .filterIsInstance<Relay.Model.Event.OnConnectionFailed>()
@@ -65,7 +61,6 @@ class RelayClient(private val koinApp: KoinApplication = wcKoinApp) : BaseRelayC
 
     override val isConnectionAvailable: StateFlow<Boolean> by lazy {
         combine(isWSSConnectionOpened, isNetworkAvailable) { wss, internet ->
-            Log.d("tuanha", "wss:$wss internet:$internet")
             wss && internet
         }.stateIn(scope, SharingStarted.Eagerly, false)
     }

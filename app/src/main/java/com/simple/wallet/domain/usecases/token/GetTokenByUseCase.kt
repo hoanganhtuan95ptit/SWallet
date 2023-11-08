@@ -11,12 +11,12 @@ class GetTokenByUseCase(
     override suspend fun execute(param: Param?): List<Token> {
         checkNotNull(param)
 
-        return if(param.chainId.isNotEmpty() && param.tokenType.isNotEmpty()){
+        return if (param.chainId.isNotEmpty() && param.tokenType.isNotEmpty()) {
 
-            tokenRepository.getTokenListBy(param.chainId,  param.tokenType)
-        }else{
+            tokenRepository.getTokenList(param.chainId, *param.tokenType.toTypedArray())
+        } else {
 
-            tokenRepository.getTokenListBy(param.chainId, param.tokenAddress, param.tokenType)
+            tokenRepository.getTokenList(param.chainId, param.tokenAddress, *param.tokenType.toTypedArray())
         }
     }
 

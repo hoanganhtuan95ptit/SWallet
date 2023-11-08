@@ -1,5 +1,6 @@
 package com.simple.wallet.di
 
+import com.simple.wallet.domain.usecases.AssetSyncUseCase
 import com.simple.wallet.domain.usecases.DetectRequestAsyncUseCase
 import com.simple.wallet.domain.usecases.SyncUseCase
 import com.simple.wallet.domain.usecases.camera.CameraDetectUseCase
@@ -30,7 +31,7 @@ import org.koin.dsl.module
 
 val useCaseModule = module {
 
-    single { SyncUseCase(get(), get()) }
+    single { SyncUseCase(get(), get(), get()) }
 
 
     single { CameraDetectUseCase(getAll(), getAll()) }
@@ -89,4 +90,6 @@ val useCaseModule = module {
     single { GetGasAsyncUseCase(get(), get()) }
 
     single { GetGasLimitAsyncUseCase(get(), get()) }
+
+    single { AssetSyncUseCase(get(), get(), get(), get()) }
 }

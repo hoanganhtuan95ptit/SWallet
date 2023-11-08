@@ -11,9 +11,9 @@ import com.simple.coreapp.utils.extentions.setText
 import com.simple.coreapp.utils.extentions.text.Text
 import com.simple.wallet.databinding.ItemWalletBinding
 import com.simple.wallet.domain.entities.Wallet
+import com.simple.wallet.utils.exts.descriptionDisplay
 import com.simple.wallet.utils.exts.imageDisplay
 import com.simple.wallet.utils.exts.nameDisplay
-import com.simple.wallet.utils.exts.typeDisplay
 
 internal class SelectWalletAdapter(onItemClick: (View, SelectWalletViewItem) -> Unit = { _, _ -> }) : ViewItemAdapter<SelectWalletViewItem, ItemWalletBinding>(onItemClick) {
 
@@ -44,7 +44,8 @@ class SelectWalletViewItem(
 
         name = data.nameDisplay
 
-        type = data.typeDisplay
+        type = data.descriptionDisplay
+
 
         image = data.imageDisplay
     }

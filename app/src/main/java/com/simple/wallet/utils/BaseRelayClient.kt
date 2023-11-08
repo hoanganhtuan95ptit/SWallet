@@ -48,11 +48,9 @@ abstract class BaseRelayClient : RelayInterface {
     }
 
     override val eventsFlow: SharedFlow<Relay.Model.Event> by lazy {
-        Log.d("tuanha", "eventsFlow: ")
         relayService
             .observeWebSocketEvent()
             .map { event ->
-                Log.d("tuanha", "eventsFlow:${event.javaClass.simpleName} ")
                 event.toRelayEvent()
             }
             .shareIn(scope, SharingStarted.Lazily, REPLAY)

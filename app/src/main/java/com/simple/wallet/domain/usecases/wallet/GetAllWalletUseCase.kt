@@ -11,7 +11,7 @@ class GetAllWalletUseCase(
     override suspend fun execute(param: Param?): List<Wallet> {
         checkNotNull(param)
 
-        return walletRepository.getListWallet(param.isSupportAllWallet, Wallet.Type.values().toList())
+        return walletRepository.getWalletList(param.isSupportAllWallet)
     }
 
     data class Param(val isSupportAllWallet: Boolean)

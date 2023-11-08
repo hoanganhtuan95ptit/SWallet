@@ -23,6 +23,7 @@
         android:layout_marginStart="16dp"
         android:textColor="?attr/colorOnBackground"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/iv_chain"
         app:layout_constraintStart_toEndOf="@id/iv_chain"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,6 +31,7 @@
         android:id="@+id/tv_chain_type"
         style="?attr/textCaption"
         android:layout_width="0dp"
+        android:visibility="gone"
         android:textColor="?attr/colorOnBackgroundVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/tv_chain_name"

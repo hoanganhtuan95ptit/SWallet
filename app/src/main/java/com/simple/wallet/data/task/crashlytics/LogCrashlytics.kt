@@ -7,6 +7,6 @@ class LogCrashlytics : Crashlytics {
 
     override suspend fun execute(throwable: Throwable) {
 
-       Log.d("tuanha", "CRASHLYTICS", throwable)
+        Log.e("error catch", "CRASHLYTICS", throwable)
     }
 }

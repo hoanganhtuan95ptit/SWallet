@@ -64,8 +64,6 @@ class WalletConnectSocketImpl(
 
     private val initLazy by lazy {
 
-        val start = System.currentTimeMillis()
-
         logAnalytics(TAG to "initialize")
 
 
@@ -96,8 +94,6 @@ class WalletConnectSocketImpl(
         })
 
 
-        Log.d("tuanha", "init: ${System.currentTimeMillis() - start}")
-
         val initParams = Wallet.Params.Init(core = CoreClient)
 
         Web3Wallet.initialize(initParams, onSuccess = {
@@ -109,10 +105,6 @@ class WalletConnectSocketImpl(
 
             logCrashlytics(java.lang.RuntimeException("$TAG Web3Wallet initialize", error.throwable))
         })
-
-
-        Log.d("tuanha", "init1: ${System.currentTimeMillis() - start}")
-
     }
 
     private val initCallbackLazy by lazy {

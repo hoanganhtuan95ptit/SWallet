@@ -29,7 +29,7 @@ class DefaultChainSyncTask(
     private val smartContractDao: SmartContractDao
 ) : ChainSyncTask {
 
-    private val version = 1L
+    private val version = 2L
 
     override suspend fun executeTask(param: Unit) {
 
@@ -52,6 +52,9 @@ class DefaultChainSyncTask(
             if (chain.urls.find { it.type == BLOCK_EXPLORER } == null) return@filter false
 
             return@filter true
+        }.sortedBy { chainResponse ->
+
+            if (chainResponse.configs.find { it.name == Chain.Config.IS_TESTNET.value && it.value.toBoolean() } != null) 0 else -1
         }
 
 
@@ -65,7 +68,8 @@ class DefaultChainSyncTask(
         val smartContractChainList = arrayListOf<Chain.SmartContract>()
 
 
-        chainRepositoryList.forEachIndexed { _, chain ->
+        chainRepositoryList.forEachIndexed { index, chain ->
+
 
             val explorer = chain.urls.first {
 
@@ -90,6 +94,8 @@ class DefaultChainSyncTask(
                 id = chain.id,
                 name = chain.name,
                 image = chain.logo,
+
+                index = index,
 
                 type = chain.type.toChainType(),
 
@@ -142,7 +148,7 @@ class DefaultChainSyncTask(
 
                     decimals = it.decimals.toInt(),
 
-                    logo = "",
+                    logo = it.logo,
 
                     chainId = chain.id,
 
@@ -208,6 +214,7 @@ class DefaultChainSyncTask(
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class TokenResponse(
         var name: String = "",
+        var logo: String = "",
         var symbol: String = "",
         var geckoId: String = "",
         var decimals: Long = 0

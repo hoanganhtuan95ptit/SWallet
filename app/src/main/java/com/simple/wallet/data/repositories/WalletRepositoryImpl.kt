@@ -2,6 +2,7 @@ package com.simple.wallet.data.repositories
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AesGcmKeyManager
@@ -20,6 +21,8 @@ import com.simple.wallet.utils.exts.fromHex
 import com.simple.wallet.utils.exts.shortenValue
 import com.simple.wallet.utils.exts.takeIfNotBlank
 import com.simple.wallet.utils.exts.toCoinType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import wallet.core.jni.CoinType
 import wallet.core.jni.HDWallet
 import wallet.core.jni.PrivateKey
@@ -67,7 +70,7 @@ class WalletRepositoryImpl(
 
     override fun importWallet(name: String, key: String, type: Wallet.Type, addressAndChainType: Map<String, Chain.Type>): Wallet {
 
-        val walletList = walletDao.findWalletListBy(addressAndChainType)
+        val walletList = walletDao.findListBy(addressAndChainType)
 
         val wallet = if (walletList.size == 1) {
             walletList.first()
@@ -112,24 +115,38 @@ class WalletRepositoryImpl(
         return wallet
     }
 
-    override fun getListWallet(isSupportAllChain: Boolean, walletTypeList: List<Wallet.Type>): List<Wallet> {
+    override fun getWalletList(isSupportAllWallet: Boolean, vararg value: Wallet.Type): List<Wallet> {
 
         val list = arrayListOf<Wallet>()
 
-        if (isSupportAllChain) {
+        if (isSupportAllWallet) {
 
             list.add(Wallet.ALL)
         }
 
-        list.addAll(walletDao.findWalletListBy(*walletTypeList.toTypedArray()))
+        list.addAll(walletDao.findListBy(*value))
 
         return list
     }
 
+    override fun getWalletListAsync(isSupportAllWallet: Boolean, vararg value: Wallet.Type): Flow<List<Wallet>> = walletDao.findListByAsync(*value).map {
+
+        Log.d("tuanha", "getWalletListAsync: ")
+        val list = arrayListOf<Wallet>()
+
+        if (isSupportAllWallet) {
+
+            list.add(Wallet.ALL)
+        }
+
+        list.addAll(it)
+
+        list
+    }
 
     override fun getWalletBy(walletAddress: String): Wallet {
 
-        return walletDao.findWalletListByAddress(walletAddress).first()
+        return walletDao.findListByAddress(walletAddress).first()
     }
 
     override fun getWalletSelected(isSupportAllChain: Boolean): Wallet {
@@ -145,7 +162,7 @@ class WalletRepositoryImpl(
             Wallet.ALL
         } else {
 
-            walletDao.findWalletListById(walletId).firstOrNull() ?: walletDao.findWalletListBy(*Wallet.Type.values()).first()
+            walletDao.findListById(walletId).firstOrNull() ?: walletDao.findListBy(*Wallet.Type.values()).first()
         }
     }
 
@@ -154,7 +171,7 @@ class WalletRepositoryImpl(
 
         val walletAddress = request.walletAddress ?: error("")
 
-        val wallet = walletDao.findWalletListByAddress(walletAddress).first()
+        val wallet = walletDao.findListByAddress(walletAddress).first()
 
         val privateKey = getPrivateKey(wallet)
 
@@ -177,7 +194,7 @@ class WalletRepositoryImpl(
 
     private fun getPrivateKey(wallet: Wallet): PrivateKey {
 
-        return wallet.getStoredKey().privateKey(wallet.chainType.first().toCoinType(), decryptPassword(wallet.cipher).toByteArray())
+        return wallet.getStoredKey().privateKey(wallet.chainTypeList.first().toCoinType(), decryptPassword(wallet.cipher).toByteArray())
     }
 
     private fun decryptPassword(walletCipher: String): String {

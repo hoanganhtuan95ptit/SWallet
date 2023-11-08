@@ -24,6 +24,10 @@ import com.simple.wallet.data.task.sign.SignMessageEvmTask
 import com.simple.wallet.data.task.sign.SignMessageTypeEvmTask
 import com.simple.wallet.data.task.sign.SignPersonalMessageEvmTask
 import com.simple.wallet.data.task.sign.SignTask
+import com.simple.wallet.data.task.token.DefaultTokenPriceSyncTask
+import com.simple.wallet.data.task.token.DefaultTokenSyncTask
+import com.simple.wallet.data.task.token.TokenPriceSyncTask
+import com.simple.wallet.data.task.token.TokenSyncTask
 import com.simple.wallet.data.task.transaction.gasprice.GasPriceEvmCallTask
 import com.simple.wallet.data.task.transaction.gasprice.GasPriceTask
 import com.simple.wallet.data.task.url.DefaultUrlSyncTask
@@ -94,6 +98,10 @@ val taskModule = module {
 
 
     single { DefaultUrlSyncTask(get(), get(), get()) } bind UrlSyncTask::class
+
+    single { DefaultTokenSyncTask(get(), get()) } bind TokenSyncTask::class
+
+    single { DefaultTokenPriceSyncTask(get()) } bind TokenPriceSyncTask::class
 
     single { DefaultChainSyncTask(get(), get(), get(), get(), get(), get()) } bind ChainSyncTask::class
 

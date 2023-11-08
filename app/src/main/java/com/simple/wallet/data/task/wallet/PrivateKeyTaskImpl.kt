@@ -47,9 +47,9 @@ class PrivateKeyTaskImpl(
 
     override suspend fun executeTask(param: PrivateKeyTask.Param): String {
 
-        val wallet = walletDao.findWalletListByAddress(param.walletAddress).first()
+        val wallet = walletDao.findListByAddress(param.walletAddress).first()
 
-        return wallet.getStoredKey().privateKey(wallet.chainType.first().toCoinType(), decryptPassword(wallet.cipher).toByteArray()).data().toHex()
+        return wallet.getStoredKey().privateKey(wallet.chainTypeList.first().toCoinType(), decryptPassword(wallet.cipher).toByteArray()).data().toHex()
     }
 
 

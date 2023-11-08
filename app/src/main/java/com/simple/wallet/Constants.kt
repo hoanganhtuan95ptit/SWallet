@@ -39,3 +39,7 @@ val DP_28 by lazy { 28.toPx() }
 val DP_32 by lazy { 32.toPx() }
 val DP_36 by lazy { 36.toPx() }
 val DP_40 by lazy { 40.toPx() }
+val DP_44 by lazy { 44.toPx() }
+val DP_48 by lazy { 48.toPx() }
+val DP_52 by lazy { 52.toPx() }
+val DP_56 by lazy { 56.toPx() }

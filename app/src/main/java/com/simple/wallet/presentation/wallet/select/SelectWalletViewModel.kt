@@ -10,6 +10,7 @@ import com.simple.coreapp.utils.extentions.postDifferentValueIfActive
 import com.simple.wallet.domain.entities.Wallet
 import com.simple.wallet.domain.usecases.wallet.GetAllWalletUseCase
 import com.simple.wallet.presentation.wallet.select.adapters.SelectWalletViewItem
+import org.jetbrains.annotations.VisibleForTesting
 
 class SelectWalletViewModel(
     private val walletId: String,
@@ -18,6 +19,7 @@ class SelectWalletViewModel(
     private val getAllWalletUseCase: GetAllWalletUseCase
 ) : BaseViewModel() {
 
+    @VisibleForTesting
     val walletList: LiveData<List<Wallet>> = liveData {
 
         postDifferentValueIfActive(getAllWalletUseCase.execute(GetAllWalletUseCase.Param(isSupportAllWallet)))

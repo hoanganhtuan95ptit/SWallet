@@ -112,7 +112,7 @@ class FeeTransactionInfoViewItem(
         }.toText(" ")
 
 
-        val feeValueCurrency = TextRes(R.string.transaction_estimate_formula, gasFee.multiply(nativeToken.price).toDisplay(FormatNumberType.GAS_FEE)).withTextColor(com.google.android.material.R.attr.colorOnBackground)
+        val feeValueCurrency = TextRes(R.string.transaction_estimate_formula, gasFee.multiply(nativeToken.price!!.price).toDisplay(FormatNumberType.GAS_FEE)).withTextColor(com.google.android.material.R.attr.colorOnBackground)
 
         val feeValueDetail = if (transactionFee <= BigDecimal.ZERO && currentChain.type == Chain.Type.EVM) TextRes(
             R.string.gas_formula,

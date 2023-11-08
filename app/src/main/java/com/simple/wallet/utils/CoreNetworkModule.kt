@@ -144,7 +144,6 @@ fun coreAndroidNetworkModule(serverUrl: String, connectionType: ConnectionType, 
         if (connectionType == ConnectionType.MANUAL) {
             ManualConnectionLifecycle(get(named(AndroidCommonDITags.CONNECTION_CONTROLLER)), LifecycleRegistry())
         } else {
-            Log.d("tuanha", "coreAndroidNetworkModule: 12")
             AndroidLifecycle.ofApplicationForeground(androidApplication())
         }
     }
@@ -154,7 +153,6 @@ fun coreAndroidNetworkModule(serverUrl: String, connectionType: ConnectionType, 
     single { FlowStreamAdapter.Factory() }
 
     single(named(AndroidCommonDITags.SCARLET)) {
-        Log.d("tuanha", "coreAndroidNetworkModule: ")
         Scarlet.Builder()
             .backoffStrategy(get<LinearBackoffStrategy>())
             .webSocketFactory(get<OkHttpClient>(named(AndroidCommonDITags.OK_HTTP)).newWebSocketFactory(get<String>(named(AndroidCommonDITags.RELAY_URL))))

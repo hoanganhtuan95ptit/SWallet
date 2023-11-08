@@ -19,6 +19,10 @@ val daoModule = module {
         get<AppRoomDatabase>().urlDao()
     }
 
+    single {
+        get<AppRoomDatabase>().balanceDao()
+    }
+
 
     single {
         Room.databaseBuilder(get(), WalletRoomDatabase::class.java, "wallet_database")
@@ -55,6 +59,10 @@ val daoModule = module {
 
     single {
         get<TokenRoomDatabase>().tokenDao()
+    }
+
+    single {
+        get<TokenRoomDatabase>().priceTokenDao()
     }
 
 

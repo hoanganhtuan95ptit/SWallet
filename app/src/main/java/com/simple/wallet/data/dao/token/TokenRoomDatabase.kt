@@ -5,8 +5,10 @@ import androidx.room.RoomDatabase
 
 private const val versionDao = 1
 
-@Database(entities = [RoomToken::class], version = versionDao, exportSchema = false)
+@Database(entities = [RoomToken::class, RoomTokenPrice::class], version = versionDao, exportSchema = false)
 abstract class TokenRoomDatabase : RoomDatabase() {
 
     abstract fun tokenDao(): TokenDao
+
+    abstract fun priceTokenDao(): PriceTokenDao
 }

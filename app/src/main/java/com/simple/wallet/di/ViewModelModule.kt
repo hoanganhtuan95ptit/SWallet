@@ -6,6 +6,7 @@ import com.simple.wallet.presentation.browser.BrowserViewModel
 import com.simple.wallet.presentation.camera.CameraViewModel
 import com.simple.wallet.presentation.chain.SelectChainViewModel
 import com.simple.wallet.presentation.home.HomeViewModel
+import com.simple.wallet.presentation.home.asset.token.TokenAssetViewModel
 import com.simple.wallet.presentation.message.sign.SignMessageConfirmViewModel
 import com.simple.wallet.presentation.search.SearchViewModel
 import com.simple.wallet.presentation.transaction.send.SendTransactionConfirmViewModel
@@ -28,6 +29,10 @@ val viewModelModule = module {
 
     viewModel {
         HomeViewModel()
+    }
+
+    viewModel {
+        TokenAssetViewModel(get())
     }
 
     viewModel {

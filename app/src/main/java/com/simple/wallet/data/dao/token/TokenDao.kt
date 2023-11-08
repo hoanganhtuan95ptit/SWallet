@@ -8,20 +8,35 @@ import androidx.room.Query
 import com.simple.wallet.domain.entities.Token
 import com.simple.wallet.domain.entities.Token.Companion.toTokenTag
 import com.simple.wallet.domain.entities.Token.Companion.toTokenType
-import java.math.BigDecimal
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 private const val TABLE_NAME = "tokens"
 
 @Dao
 interface TokenDao {
 
-    fun findListBy(chainId: List<Long>, tokenType: List<Token.Type>): List<Token> = findRoomListByChainIdAndType(chainId, tokenType.map { it.value }).toEntity()
+
+    fun findListBy(vararg tokenType: Token.Type): List<Token> = findRoomListByType(tokenType.map { it.value }).toEntity()
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE type COLLATE NOCASE IN (:tokenType)")
+    fun findRoomListByType(tokenType: List<String>): List<RoomToken>
+
+
+    fun findListByAsync(vararg tokenType: Token.Type): Flow<List<Token>> = findRoomListByTypeAsync(tokenType.map { it.value }).distinctUntilChanged().toEntity()
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE type COLLATE NOCASE IN (:tokenType)")
+    fun findRoomListByTypeAsync(tokenType: List<String>): Flow<List<RoomToken>>
+
+
+    fun findListBy(chainId: List<Long>, vararg tokenType: Token.Type): List<Token> = findRoomListByChainIdAndType(chainId, tokenType.map { it.value }).toEntity()
 
     @Query("SELECT * FROM $TABLE_NAME WHERE chainId IN (:chainId) AND type COLLATE NOCASE IN (:tokenType)")
     fun findRoomListByChainIdAndType(chainId: List<Long>, tokenType: List<String>): List<RoomToken>
 
 
-    fun findListBy(chainId: List<Long>, tokenAddress: List<String>, tokenType: List<Token.Type>): List<Token> = findRoomListBy(chainId, tokenAddress, tokenType.map { it.value }).toEntity()
+    fun findListBy(chainId: List<Long>, tokenAddress: List<String>, vararg tokenType: Token.Type): List<Token> = findRoomListBy(chainId, tokenAddress, tokenType.map { it.value }).toEntity()
 
     @Query("SELECT * FROM $TABLE_NAME WHERE chainId IN (:chainId) AND address IN (:tokenAddress) AND type COLLATE NOCASE IN (:tokenType)")
     fun findRoomListBy(chainId: List<Long>, tokenAddress: List<String>, tokenType: List<String>): List<RoomToken>
@@ -35,11 +50,8 @@ interface TokenDao {
     fun insertOrUpdate(rooms: List<RoomToken>)
 
 
-    @Query("DELETE FROM $TABLE_NAME WHERE chainId = :chainId AND address COLLATE NOCASE = :tokenAddress")
-    fun delete(chainId: Long, tokenAddress: String)
-
-    @Query("DELETE FROM $TABLE_NAME WHERE chainId = :chainId AND address COLLATE NOCASE IN (:tokenAddressList)")
-    fun delete(chainId: Long, tokenAddressList: List<String>)
+    @Query("DELETE FROM $TABLE_NAME WHERE chainId IN (:chainIdList) AND address COLLATE NOCASE IN (:tokenAddressList)")
+    fun delete(chainIdList: List<Long>, tokenAddressList: List<String>)
 }
 
 @Entity(
@@ -58,8 +70,6 @@ data class RoomToken(
     var logo: String = "",
 
     var chainId: Long = 0,
-
-    var price: String = BigDecimal.ZERO.toPlainString(),
 
     var tag: String = Token.Tag.UNKNOWN.value,
 
@@ -83,11 +93,15 @@ private fun Token.toRoom(): RoomToken {
         decimals = decimals,
         logo = logo,
         chainId = chainId,
-        price = price.toPlainString(),
         tag = tag.value,
         type = type.value,
         geckoId = geckoId
     )
+}
+
+private fun Flow<List<RoomToken>>.toEntity() = map {
+
+    it.toEntity()
 }
 
 private fun List<RoomToken>.toEntity() = map {
@@ -104,7 +118,6 @@ private fun RoomToken.toEntity(): Token {
         decimals = decimals,
         logo = logo,
         chainId = chainId,
-        price = price.toBigDecimal(),
         tag = tag.toTokenTag(),
         type = type.toTokenType(),
         geckoId = geckoId

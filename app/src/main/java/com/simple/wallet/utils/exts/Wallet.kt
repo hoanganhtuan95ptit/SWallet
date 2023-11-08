@@ -10,6 +10,18 @@ import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Wallet
 
+val Wallet.walletList
+    get() = addressMap.map {
+
+        Wallet(
+            id = this.id,
+            name = this.name,
+            cipher = this.cipher,
+            type = this.type,
+            addressMap = mapOf(it.key to it.value)
+        )
+    }
+
 
 val Wallet.nameDisplay: Text
     get() = if (id == Wallet.ID_ALL) {
@@ -18,6 +30,21 @@ val Wallet.nameDisplay: Text
     } else {
 
         name.toText()
+    }
+
+val Wallet.descriptionDisplay: Text
+    get() = if (id == Wallet.ID_ALL) {
+
+        R.string.all_wallet.toText()
+    } else if (type == Wallet.Type.SEED_PHASE) {
+
+        listOf(address.shortenValue().toText(), R.string.multi_chain.toText()).toText(" ")
+    } else if (type == Wallet.Type.PRIVATE && addressMap.any { it.value == Chain.Type.EVM }) {
+
+        listOf(address.shortenValue().toText(), R.string.evm.toText()).toText(" ")
+    } else {
+
+        listOf(address.shortenValue().toText(), R.string.watch.toText()).toText(" ")
     }
 
 val Wallet.typeDisplay: Text

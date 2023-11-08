@@ -3,22 +3,21 @@ package com.simple.wallet.utils.exts
 import com.simple.coreapp.utils.extentions.text.Text
 import com.simple.coreapp.utils.extentions.toText
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.MathContext
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-fun BigDecimal.decimal(decimals: Int? = 0, roundingMode: RoundingMode = RoundingMode.FLOOR): BigDecimal {
+fun BigInteger.decimal(decimals: Int? = 0, roundingMode: RoundingMode = RoundingMode.FLOOR): BigDecimal {
 
-    return this.divide(BigDecimal.TEN.pow(decimals ?: 0), roundingMode)
+    return toBigDecimal().decimal(decimals, roundingMode)
 }
 
-fun BigDecimal.divideToPowerTen(decimals: Int?, roundingMode: RoundingMode = RoundingMode.FLOOR): BigDecimal {
+fun BigDecimal.decimal(decimals: Int? = 0, roundingMode: RoundingMode = RoundingMode.FLOOR): BigDecimal {
 
-    val dec = decimals ?: 0
-
-    return this.divide(BigDecimal.TEN.pow(dec), 18, roundingMode)
+    return divide(BigDecimal.TEN.pow(decimals ?: 0))
 }
 
 fun BigDecimal.multiplyToPowerTen(decimals: Int?): BigDecimal {

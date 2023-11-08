@@ -28,6 +28,9 @@
         <item name="colorTrue">#37aa5f</item>
         <item name="colorError">#FF0000</item>
 
+        <item name="colorUp">#37aa5f</item>
+        <item name="colorDown">#FF0000</item>
+
         <item name="colorDivider">#33FFFFFF</item>
 
         <item name="colorWarning">#F2BE37</item>
@@ -69,6 +72,7 @@
         <item name="colorBackgroundVariant">#212121</item>
         <item name="colorOnBackgroundVariant">#7F8483</item>
 
+        <item name="colorBackgroundTertiary">#e9e9e9</item>
         <item name="colorOnBackgroundTertiary">#EAEAEA</item>
 
         <item name="colorSurface">#FFFFFF</item>
@@ -98,6 +102,8 @@
         <item name="colorOnBackground10">#90000000</item>
 
         <item name="colorDivider">#50111111</item>
+
+        <item name="colorLoading">#50111111</item>
     </style>
 
     <style name="Popup" parent="Theme.SWallet">

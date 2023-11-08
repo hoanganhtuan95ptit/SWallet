@@ -8,6 +8,7 @@ data class Chain(
 
     var image: String = "",
 
+    var index: Int = 0,
 
     var type: Type = Type.EVM,
 
@@ -19,6 +20,9 @@ data class Chain(
 
     val isEIP1559: Boolean
         get() = config?.get(Config.EIP_1559).toBoolean()
+
+    val isAllNetwork: Boolean
+        get() = id == ALL_NETWORK
 
 
     enum class Type(val value: String) {
@@ -50,13 +54,25 @@ data class Chain(
 
         val type: String = "",
         val address: String = "",
-    ) : Entity
+    ) : Entity {
 
+        enum class Type(val value: String) {
+
+            MULTI_CALL_V3("MULTI_CALL_V3"),
+        }
+    }
 
     companion object {
 
-        const val ALL_NETWORK = -1000L
+        const val ID_MAIN_NET = -1001L
+        val MAIN_NET = Chain(ID_MAIN_NET)
 
+
+        const val ID_TEST_NET = -1002L
+        val TEST_NET = Chain(ID_TEST_NET)
+
+
+        const val ALL_NETWORK = -1000L
         val ALL = Chain(ALL_NETWORK)
 
 
@@ -69,11 +85,19 @@ data class Chain(
         )
 
 
-        fun String.toChainType() = Chain.Type.values().find { this.equals(it.value, true) } ?: error("not support $this")
+        fun String.toChainType() = toChainTypeOrNull()!!
 
-        fun String.toChainConfig() = Chain.Config.values().first { this.equals(it.value, true) }
+        fun String.toChainTypeOrNull() = Chain.Type.values().firstOrNull { this.equals(it.value, true) }
+
+
+        fun String.toChainConfig() = toChainConfigOrNull()!!
 
         fun String.toChainConfigOrNull() = Chain.Config.values().firstOrNull { this.equals(it.value, true) }
+
+
+        fun String.toChainSmartContractType() = toChainSmartContractTypeOrNull()!!
+
+        fun String.toChainSmartContractTypeOrNull() = Chain.SmartContract.Type.values().firstOrNull { this.equals(it.value, true) }
 
 
         fun String.fromNamespace() = if (this == "eip155") {

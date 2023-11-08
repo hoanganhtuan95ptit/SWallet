@@ -20,7 +20,7 @@ import com.simple.wallet.UNLIMITED
 import com.simple.wallet.databinding.ItemTransactionInfoTokenApproveBinding
 import com.simple.wallet.domain.entities.extra.ApproveExtra
 import com.simple.wallet.utils.exts.FormatNumberType
-import com.simple.wallet.utils.exts.divideToPowerTen
+import com.simple.wallet.utils.exts.decimal
 import com.simple.wallet.utils.exts.toDisplay
 
 class TokenApproveAdapter : ViewItemAdapter<TokenApproveViewItem, ItemTransactionInfoTokenApproveBinding>() {
@@ -64,7 +64,7 @@ class TokenApproveViewItem(
         } else {
 
             listOf(
-                extra.amountApprove.toBigDecimal().divideToPowerTen(extra.tokenApprove.decimals).toDisplay(FormatNumberType.BALANCE),
+                extra.amountApprove.decimal(extra.tokenApprove.decimals).toDisplay(FormatNumberType.BALANCE),
                 TextImage(R.drawable.img_edit_accent_24dp, 18.toPx())
             ).toText(" ").let {
 

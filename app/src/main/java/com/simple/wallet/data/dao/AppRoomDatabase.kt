@@ -5,8 +5,10 @@ import androidx.room.RoomDatabase
 
 private const val versionDao = 1
 
-@Database(entities = [RoomUrl::class], version = versionDao, exportSchema = false)
+@Database(entities = [RoomUrl::class, RoomBalance::class], version = versionDao, exportSchema = false)
 abstract class AppRoomDatabase : RoomDatabase() {
 
     abstract fun urlDao(): UrlDao
+
+    abstract fun balanceDao(): BalanceDao
 }

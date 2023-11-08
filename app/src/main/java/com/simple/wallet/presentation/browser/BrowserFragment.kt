@@ -133,11 +133,11 @@ class BrowserFragment : BaseViewModelFragment<FragmentBrowserBinding, BrowserVie
 
         val webView = binding.webView
 
-        webView.settings.useWideViewPort = true
+//        webView.settings.useWideViewPort = true
         webView.settings.domStorageEnabled = true
         webView.settings.javaScriptEnabled = true
-        webView.settings.loadWithOverviewMode = true
-        webView.settings.javaScriptCanOpenWindowsAutomatically = true
+//        webView.settings.loadWithOverviewMode = true
+//        webView.settings.javaScriptCanOpenWindowsAutomatically = true
 
         webView.settings.userAgentString = webView.settings.userAgentString + getString(R.string.app_name)
 

@@ -5,13 +5,13 @@ import com.simple.wallet.domain.entities.scan.ScanData
 
 interface CameraDetectTask : Task<CameraDetectTask.Param, List<ScanData>> {
 
-    override suspend fun logStart(taskId: String) {
+    override suspend fun logStart(param: Param, taskId: String) {
     }
 
-    override suspend fun logSuccess(taskId: String) {
+    override suspend fun logSuccess(param: Param, taskId: String) {
     }
 
-    override suspend fun logFailed(taskId: String, throwable: Throwable) {
+    override suspend fun logFailed(param: Param, taskId: String, throwable: Throwable) {
     }
 
 

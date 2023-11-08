@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="colorUp" format="color" />
+    <attr name="colorDown" format="color" />
+
     <attr name="colorVerify" format="color" />
     <attr name="colorVerify10" format="color" />
 
@@ -13,6 +16,7 @@
 
     <attr name="colorOnBackground10" format="color" />
 
+    <attr name="colorBackgroundTertiary" format="color"/>
     <attr name="colorOnBackgroundTertiary" format="color" />
 
 
