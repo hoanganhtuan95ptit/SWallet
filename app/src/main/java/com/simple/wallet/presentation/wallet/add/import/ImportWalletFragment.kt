@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,9 +32,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -43,17 +40,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,8 +58,6 @@ import com.simple.coreapp.utils.AppException
 import com.simple.coreapp.utils.autoCleared
 import com.simple.coreapp.utils.ext.getSerializableOrNull
 import com.simple.coreapp.utils.extentions.clear
-import com.simple.coreapp.utils.extentions.doOnHeightNavigationChange
-import com.simple.coreapp.utils.extentions.doOnHeightStatusChange
 import com.simple.coreapp.utils.extentions.get
 import com.simple.coreapp.utils.extentions.getViewModel
 import com.simple.coreapp.utils.extentions.getViewModelGlobal
@@ -87,7 +78,10 @@ import com.simple.wallet.domain.entities.scan.ScanData
 import com.simple.wallet.presentation.wallet.add.AddWalletViewModel
 import com.simple.wallet.presentation.wallet.add.import.ImportWalletFragment.Companion.REQUEST_SCAN_DATA_WHEN_IMPORT_WALLET
 import com.simple.wallet.theme.JetchatTheme
+import com.simple.wallet.utils.exts.NextView
 import com.simple.wallet.utils.exts.dashedBorder
+import com.simple.wallet.utils.exts.navigationBarPadding
+import com.simple.wallet.utils.exts.statusBarPadding
 import com.simple.wallet.utils.exts.takeIfNotBlank
 
 class ImportWalletFragment : BaseFragment() {
@@ -283,6 +277,7 @@ private fun ContentView(
         ) {
 
             NextView(
+                text = stringResource(id = R.string.action_continue),
                 enable = isNextEnable.value
             ) {
 
@@ -329,7 +324,6 @@ private fun WalletKey(
                 .defaultMinSize(minHeight = 150.dp),
             onTextChange = {
 
-                Log.d("tuanha", "WalletKey: $it")
                 walletKey.value = it
 
                 viewModel.updateInputKey(it)
@@ -398,30 +392,6 @@ private fun ErrorView(
     }
 }
 
-@Composable
-private fun BoxScope.NextView(
-    enable: Boolean,
-    onClick: () -> Unit
-) {
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .align(Alignment.BottomEnd)
-            .clip(RoundedCornerShape(16.dp))
-            .background(if (enable) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inversePrimary)
-            .clickable(enabled = enable, onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Text(
-            text = stringResource(id = R.string.action_continue),
-            color = MaterialTheme.colorScheme.onPrimary,
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Input(
@@ -454,40 +424,6 @@ private fun Input(
             onTextChange(it)
         },
     )
-}
-
-private fun Modifier.navigationBarPadding() = composed {
-
-    var navigationBarHeight by rememberSaveable { mutableIntStateOf(0) }
-
-    (LocalContext.current as Activity).doOnHeightNavigationChange {
-
-        if (navigationBarHeight != it) navigationBarHeight = it
-    }
-
-    val navigationBarHeightDp = with(LocalDensity.current) {
-
-        navigationBarHeight.toDp()
-    }
-
-    padding(bottom = navigationBarHeightDp)
-}
-
-private fun Modifier.statusBarPadding() = composed {
-
-    var statusBarHeight by rememberSaveable { mutableIntStateOf(0) }
-
-    (LocalContext.current as Activity).doOnHeightStatusChange {
-
-        if (statusBarHeight != it) statusBarHeight = it
-    }
-
-    val statusBarHeightDp = with(LocalDensity.current) {
-
-        statusBarHeight.toDp()
-    }
-
-    padding(top = statusBarHeightDp)
 }
 
 class ImportWalletProvider : NavigationProvider {

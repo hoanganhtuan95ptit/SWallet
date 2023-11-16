@@ -69,7 +69,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
-
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
     implementation("androidx.startup:startup-runtime:1.1.1")
