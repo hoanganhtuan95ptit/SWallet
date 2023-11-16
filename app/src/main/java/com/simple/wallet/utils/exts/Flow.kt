@@ -44,7 +44,7 @@ suspend fun <T> Flow<T>.debounceInternal(timeOut: Long): Flow<T> {
     }
 }
 
-suspend fun <T> Flow<T>.launchCollect(coroutineScope: CoroutineScope, collector: FlowCollector<T>) = coroutineScope.launch {
+fun <T> Flow<T>.launchCollect(coroutineScope: CoroutineScope, collector: FlowCollector<T>) = coroutineScope.launch {
 
     this@launchCollect.collect(collector)
 }

@@ -40,7 +40,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_corners_16dp_stroke_dash_1dp_divider"
         android:gravity="top"
-        android:hint="@string/message_import_wallet"
+        android:hint="@string/hint_import_wallet"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:paddingEnd="48dp"

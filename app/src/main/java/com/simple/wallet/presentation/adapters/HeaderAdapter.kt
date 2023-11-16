@@ -39,3 +39,19 @@ class HeaderViewItem(
         id
     )
 }
+
+class HeaderViewItemV2(
+    val id: String,
+
+    var logo: String = "",
+
+    var title: Int = -1,
+    var caption: Int = -1,
+
+    var captionBackground: Int = 0,
+) : ViewItemCloneable {
+
+    override fun areItemsTheSame(): List<Any> = listOf(
+        id
+    )
+}

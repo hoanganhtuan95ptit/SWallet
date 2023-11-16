@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +32,8 @@ class MainActivity : BaseViewModelActivity<ActivityMainBinding, MainViewModel>()
         window.navigationBarColor = Color.TRANSPARENT
 
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         lifecycleScope.launchWhenResumed {
 

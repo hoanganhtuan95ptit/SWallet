@@ -1,15 +1,10 @@
 package com.simple.wallet.presentation.wallet.add.adapters
 
 import android.view.View
+import androidx.compose.runtime.Immutable
 import androidx.core.view.updatePadding
 import com.simple.adapter.ViewItemAdapter
 import com.simple.adapter.ViewItemCloneable
-import com.simple.coreapp.utils.extentions.emptyImage
-import com.simple.coreapp.utils.extentions.emptyText
-import com.simple.coreapp.utils.extentions.image.Image
-import com.simple.coreapp.utils.extentions.setImage
-import com.simple.coreapp.utils.extentions.setText
-import com.simple.coreapp.utils.extentions.text.Text
 import com.simple.wallet.databinding.ItemOptionBinding
 
 class OptionAdapter(onItemClick: (View, OptionViewItem) -> Unit = { _, _ -> }) : ViewItemAdapter<OptionViewItem, ItemOptionBinding>(onItemClick) {
@@ -21,7 +16,7 @@ class OptionAdapter(onItemClick: (View, OptionViewItem) -> Unit = { _, _ -> }) :
     override fun bind(binding: ItemOptionBinding, viewType: Int, position: Int, item: OptionViewItem) {
         super.bind(binding, viewType, position, item)
 
-        binding.ivOption.setImage(item.image)
+//        binding.ivOption.setImage(item.image)
 
         binding.tvOptionTitle.setText(item.title)
         binding.tvOptionCaption.setText(item.caption)
@@ -42,14 +37,15 @@ class OptionAdapter(onItemClick: (View, OptionViewItem) -> Unit = { _, _ -> }) :
     }
 }
 
+@Immutable
 data class OptionViewItem(
     val id: String,
 
-    var image: Image = emptyImage(),
+    var image: Int = -1,
 
 
-    var title: Text = emptyText(),
-    var caption: Text = emptyText(),
+    var title: Int = -1,
+    var caption: Int = -1,
 
     var background: Int? = null,
 
