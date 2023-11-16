@@ -85,7 +85,7 @@ class AddWalletFragment : BaseSheetFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
 
-        val viewItem = viewItem?: return
+        val viewItem = viewItem ?: return
 
         offerDeepLink(viewItem.id)
     }
@@ -195,7 +195,8 @@ private fun HeaderView(
         Text(
             text = title,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(top = 20.dp),
+            modifier = Modifier
+                .padding(top = 20.dp),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -203,7 +204,8 @@ private fun HeaderView(
         Text(
             text = caption,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier
+                .padding(top = 8.dp),
             textAlign = TextAlign.Center,
         )
     }

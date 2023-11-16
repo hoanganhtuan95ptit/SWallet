@@ -6,6 +6,7 @@ import com.simple.coreapp.utils.extentions.text.Text
 import com.simple.coreapp.utils.extentions.toImage
 import com.simple.coreapp.utils.extentions.toText
 import com.simple.wallet.DP_24
+import com.simple.wallet.DP_32
 import com.simple.wallet.R
 import com.simple.wallet.domain.entities.Chain
 import com.simple.wallet.domain.entities.Wallet
@@ -68,7 +69,7 @@ val Wallet.imageDisplay: Image
         R.drawable.img_all_network.toImage()
     } else {
 
-        addressMap.keys.firstOrNull()?.toDrawable(DP_24) ?: emptyImage()
+        addressMap.keys.firstOrNull()?.toDrawable(DP_32) ?: emptyImage()
     }
 
 
